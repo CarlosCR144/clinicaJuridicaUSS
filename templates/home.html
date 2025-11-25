@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">Bienvenido al Sistema de Gestión</h1>
+        <p class="lead">Clínica Jurídica Universidad San Sebastián</p>
+        <hr class="my-4">
+        {% if user.is_authenticated %}
+            <p>Has iniciado sesión como <strong>{{ user.get_rol_display }}</strong>.</p>
+            <a class="btn btn-primary btn-lg" href="#" role="button">Ver Panel</a>
+        {% else %}
+            <p>Por favor, inicia sesión para acceder a los expedientes.</p>
+            <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">Ingresar</a>
+        {% endif %}
+    </div>
+{% endblock %}

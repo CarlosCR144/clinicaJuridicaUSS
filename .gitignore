@@ -1,0 +1,34 @@
+# --- Python y Django ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+*.log
+
+# --- Entorno Virtual ---
+# Nombres comunes para entornos virtuales
+venv/
+env/
+.venv/
+.env/
+
+# --- Variables de Entorno y Secretos ---
+# IMPORTANTE: Nunca subir contraseñas o claves secretas
+.env
+.env.local
+
+# --- IDEs y Editores ---
+# Configuraciones personales que no le sirven a tus compañeros
+.vscode/
+.idea/
+*.swp
+
+# --- Archivos Estáticos y Media ---
+# Carpetas donde se recolectan estáticos o suben archivos los usuarios
+staticfiles/
+media/
+
+# --- Sistema Operativo ---
+.DS_Store
+Thumbs.db
