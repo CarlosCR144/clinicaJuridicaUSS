@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Agenda{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="h4 mb-0">Agenda de la clínica</h2>
+  <a href="{% url 'agenda:agendar' %}" class="btn btn-primary btn-sm">
+    + Nueva cita
+  </a>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+    <p class="text-muted">
+      Aquí puedes ver y gestionar las citas agendadas para la clínica jurídica.
+    </p>
+
+    <ul class="list-group list-group-flush">
+      {% for cita in citas %}
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="fw-semibold">
+                {{ cita.fecha|date:"d/m/Y H:i" }} · {{ cita.caso }}
+              </div>
+              <div class="small text-muted">
+                Cliente: {{ cita.caso.cliente }} · Lugar: {{ cita.lugar }}
+              </div>
+            </div>
+            <div>
+              <span class="badge text-bg-light">{{ cita.estado_display }}</span>
+            </div>
+          </div>
+        </li>
+      {% empty %}
+        <li class="list-group-item text-muted">
+          No hay citas agendadas.
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

@@ -1,16 +1,45 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Inicio · Clínica Jurídica{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">Bienvenido al Sistema de Gestión</h1>
-        <p class="lead">Clínica Jurídica Universidad San Sebastián</p>
-        <hr class="my-4">
-        {% if user.is_authenticated %}
-            <p>Has iniciado sesión como <strong>{{ user.get_rol_display }}</strong>.</p>
-            <a class="btn btn-primary btn-lg" href="#" role="button">Ver Panel</a>
-        {% else %}
-            <p>Por favor, inicia sesión para acceder a los expedientes.</p>
-            <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">Ingresar</a>
-        {% endif %}
+<div class="row align-items-center">
+  <div class="col-md-7">
+    <h1 class="display-6 fw-bold mb-3">
+      Bienvenida/o al sistema de la Clínica Jurídica
+    </h1>
+    <p class="lead">
+      Desde esta plataforma podrás gestionar casos, agendar atenciones,
+      administrar documentos y trabajar colaborativamente entre
+      director, supervisores y estudiantes.
+    </p>
+    <div class="mt-3">
+      {% if user.is_authenticated %}
+        <a href="{% url 'casos:lista' %}" class="btn btn-primary me-2">
+          Ver casos
+        </a>
+        <a href="{% url 'agenda:calendario' %}" class="btn btn-outline-primary">
+          Ir a agenda
+        </a>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn btn-primary">
+          Iniciar sesión
+        </a>
+      {% endif %}
     </div>
+  </div>
+  <div class="col-md-5 mt-4 mt-md-0">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h5 class="card-title fw-bold">Resumen rápido</h5>
+        <p class="mb-2">Aquí luego puedes mostrar:</p>
+        <ul class="mb-0">
+          <li>Casos activos</li>
+          <li>Citas agendadas del día</li>
+          <li>Documentos recientes</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

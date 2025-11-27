@@ -11,7 +11,7 @@ class Usuario(AbstractUser):
         ('supervisor', 'Abogado Supervisor'),
         ('admin', 'Administrador del Sistema'),
     )
-
+    
     rut = models.CharField(max_length=12, unique=True, verbose_name='RUT')
     telefono = models.CharField(max_length=15, blank=True, null=True, verbose_name='Teléfono')
     rol = models.CharField(max_length=20, choices=ROL_CHOICES, default='estudiante')

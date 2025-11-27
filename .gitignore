@@ -32,3 +32,5 @@ media/
 # --- Sistema Operativo ---
 .DS_Store
 Thumbs.db
+clinica_juridica/settings.py
+clinica_juridica/settings.py

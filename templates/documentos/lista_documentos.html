@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Documentos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="h4 mb-0">Documentos</h2>
+  <a href="{% url 'documentos:subir_general' %}" class="btn btn-primary btn-sm">
+    + Subir documento
+  </a>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Caso asociado</th>
+            <th>Tipo</th>
+            <th>Subido por</th>
+            <th>Fecha</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for doc in documentos %}
+            <tr>
+              <td>{{ doc.nombre }}</td>
+              <td>{{ doc.caso }}</td>
+              <td>{{ doc.tipo_display }}</td>
+              <td>{{ doc.creado_por }}</td>
+              <td>{{ doc.fecha_subida|date:"d/m/Y" }}</td>
+              <td class="text-end">
+                <a href="{{ doc.archivo.url }}" class="btn btn-sm btn-outline-primary">
+                  Ver
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">
+                No se encontraron documentos.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
