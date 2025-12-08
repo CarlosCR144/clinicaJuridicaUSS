@@ -5,6 +5,7 @@ __pycache__/
 *.pyd
 db.sqlite3
 *.log
+migrations/
 
 # --- Entorno Virtual ---
 # Nombres comunes para entornos virtuales
