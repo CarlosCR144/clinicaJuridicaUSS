@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Agenda{% endblock %}
+
+{% block content %}
+<h1>Agenda de Citas</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Fecha y Hora</th>
+            <th>Duración (min)</th>
+            <th>Causa ID</th>
+            <th>Responsable</th>
+            <th>Persona Atendida</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cita in citas %}
+        <tr>
+            <td>{{ cita.get_tipo_display }}</td>
+            <td>{{ cita.fecha_hora|date:"Y-m-d H:i" }}</td>
+            <td>{{ cita.duracion }}</td>
+            <td>{{ cita.causa.id }}</td>
+            <td>{{ cita.responsable.username }}</td>
+            <td>{% if cita.persona_atendida %}{{ cita.persona_atendida.nombres }} {{ cita.persona_atendida.apellidos
+                }}{% else %} - {% endif %}</td>
+            <td>{{ cita.get_estado_display }}</td>
+            <td>
+                <a href="{% url 'agenda:detalle' cita.id %}" class="btn btn-sm btn-primary">Ver</a>
+                <a href="{% url 'agenda:editar' cita.id %}" class="btn btn-sm btn-warning">Editar</a>
+                <a href="{% url 'agenda:eliminar' cita.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8">No hay citas programadas.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'agenda:crear' %}" class="btn btn-success">Nueva Cita</a>
+{% endblock %}

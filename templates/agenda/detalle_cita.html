@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Cita{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        Detalle de Cita
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">{{ cita.get_tipo_display }}</h5>
+        <p class="card-text"><strong>Fecha y Hora:</strong> {{ cita.fecha_hora|date:"d/m/Y H:i" }}</p>
+        <p class="card-text"><strong>Duración:</strong> {{ cita.duracion }} minutos</p>
+        <p class="card-text"><strong>Lugar:</strong> {{ cita.lugar }}</p>
+        <p class="card-text"><strong>Estado:</strong> {{ cita.get_estado_display }}</p>
+        <p class="card-text"><strong>Responsable:</strong> {{ cita.responsable.first_name }} {{
+            cita.responsable.last_name }}</p>
+        <p class="card-text"><strong>Persona Atendida:</strong> {% if cita.persona_atendida %}{{
+            cita.persona_atendida.nombres }} {{ cita.persona_atendida.apellidos }}{% else %}No especificada{% endif %}
+        </p>
+        <p class="card-text"><strong>Causa Asociada:</strong> <a href="{% url 'casos:detalle' cita.causa.id %}">{{
+                cita.causa }}</a></p>
+
+        {% if cita.observaciones %}
+        <div class="mt-3">
+            <h6>Observaciones:</h6>
+            <p>{{ cita.observaciones|linebreaks }}</p>
+        </div>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{% url 'agenda:editar' cita.id %}" class="btn btn-warning">Editar</a>
+            <a href="{% url 'agenda:eliminar' cita.id %}" class="btn btn-danger">Eliminar</a>
+            <a href="{% url 'agenda:lista' %}" class="btn btn-secondary">Volver a la lista</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

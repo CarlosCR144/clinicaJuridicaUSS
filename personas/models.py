@@ -30,3 +30,14 @@ class Persona(models.Model):
     
     def __str__(self):
         return f"{self.nombres} {self.apellidos} ({self.rut})"
+
+class AuditLog(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True)
+    accion = models.CharField(max_length=50)  # CREAR, EDITAR, ELIMINAR, SUBIR, DESCARGAR
+    modelo = models.CharField(max_length=50)  # Causa, Documento, Persona, Cita
+    registro_id = models.CharField(max_length=50) # ID del objeto afectado
+    detalle = models.TextField(blank=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.usuario} - {self.accion} {self.modelo} - {self.fecha}"

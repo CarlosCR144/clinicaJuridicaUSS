@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Cita{% endblock %}
+
+{% block content %}
+<h1>Eliminar Cita</h1>
+<div class="alert alert-danger">
+    <p>¿Estás seguro que deseas eliminar la cita de tipo "<strong>{{ cita.get_tipo_display }}</strong>" programada para
+        el {{ cita.fecha_hora|date:"d/m/Y H:i" }}?</p>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    <a href="{% url 'agenda:lista' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

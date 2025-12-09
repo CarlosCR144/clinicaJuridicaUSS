@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buscar Causas{% endblock %}
+
+{% block content %}
+<h1>Buscar Causas</h1>
+<form method="get" class="mb-3">
+    <div class="row g-2">
+        <div class="col-md-4">
+            <input type="text" name="q" class="form-control" placeholder="Buscar por carátula o descripción"
+                value="{{ query }}">
+        </div>
+        <div class="col-md-4">
+            <input type="text" name="materia" class="form-control" placeholder="Materia" value="{{ materia }}">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </div>
+</form>
+
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link"
+                href="?{% if query %}q={{ query }}&{% endif %}{% if materia %}materia={{ materia }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% else %}
+        <li class="page-item"><a class="page-link"
+                href="?{% if query %}q={{ query }}&{% endif %}{% if materia %}materia={{ materia }}&{% endif %}page={{ num }}">{{
+                num }}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link"
+                href="?{% if query %}q={{ query }}&{% endif %}{% if materia %}materia={{ materia }}&{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Carátula</th>
+            <th>Descripción</th>
+            <th>Materia</th>
+            <th>Cliente</th>
+            <th>Responsable</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for caso in page_obj.object_list %}
+        <tr>
+            <td>{{ caso.caratula }}</td>
+            <td>{{ caso.descripcion|truncatewords:15 }}</td>
+            <td>{{ caso.materia.nombre }}</td>
+            <td>{{ caso.cliente.nombres }} {{ caso.cliente.apellidos }}</td>
+            <td>{{ caso.responsable.username }}</td>
+            <td><a href="{% url 'casos:detalle' caso.id %}" class="btn btn-sm btn-primary">Ver</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No se encontraron causas.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

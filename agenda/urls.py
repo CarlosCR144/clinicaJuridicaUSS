@@ -1,10 +1,12 @@
-# agenda/urls.py
 from django.urls import path
 from . import views
 
 app_name = 'agenda'
 
 urlpatterns = [
-    path('', views.calendario, name='calendario'),         # /agenda/
-    path('nueva/', views.agendar_cita, name='agendar'),    # /agenda/nueva/
+    path('', views.lista_citas, name='lista'),
+    path('nuevo/', views.crear_cita, name='crear'),
+    path('<int:pk>/', views.detalle_cita, name='detalle'),
+    path('<int:pk>/editar/', views.editar_cita, name='editar'),
+    path('<int:pk>/eliminar/', views.eliminar_cita, name='eliminar'),
 ]

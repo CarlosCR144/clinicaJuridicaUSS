@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ accion }} Cita{% endblock %}
+
+{% block content %}
+<h1>{{ accion }} Cita</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">{{ accion }}</button>
+</form>
+{% endblock %}

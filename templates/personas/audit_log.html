@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registro de Auditoría{% endblock %}
+
+{% block content %}
+<h1>Registro de Auditoría</h1>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+            <th>Modelo</th>
+            <th>ID Registro</th>
+            <th>Detalle</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.fecha|date:"d/m/Y H:i" }}</td>
+            <td>{{ log.usuario.username }}</td>
+            <td><span class="badge bg-secondary">{{ log.accion }}</span></td>
+            <td>{{ log.modelo }}</td>
+            <td>{{ log.registro_id }}</td>
+            <td>{{ log.detalle }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No hay registros de auditoría.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

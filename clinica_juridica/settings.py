@@ -88,12 +88,8 @@ WSGI_APPLICATION = 'clinica_juridica.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': environ.get('MYSQL_DB', 'clinica_juridica_db'),
-        'USER': environ.get('MYSQL_USER', 'root'),
-        'PASSWORD': environ.get('MYSQL_PASSWORD', 'root1234'),
-        'HOST': environ.get('DB_HOST', 'localhost'),
-        'PORT': environ.get('DB_PORT', '3306'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -147,3 +143,8 @@ AUTH_USER_MODEL = 'personas.Usuario'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'
+
+# Media files (uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
