@@ -3,6 +3,40 @@
 {% block title %}Caso {{ caso.rol_rit }}{% endblock %}
 
 {% block content %}
+{% if alertas_integridad %}
+<div class="alert alert-danger shadow-sm mb-4 border-danger border-start border-4" role="alert">
+    <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-shield-exclamation-fill fs-4 me-2"></i>
+        <h5 class="alert-heading fw-bold mb-0">Integridad de Archivos Comprometida</h5>
+    </div>
+    <p class="mb-0">El sistema ha detectado inconsistencias críticas:</p>
+    
+    <div class="vstack gap-2 mt-3">
+        {% for alerta in alertas_integridad %}
+            <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-50 p-2 rounded border border-danger border-opacity-25">
+                <span>
+                    <i class="bi bi-file-earmark-x me-2"></i>{{ alerta.mensaje }}
+                </span>
+                
+                {% if user.rol == 'director' or user.rol == 'supervisor' %}
+                    {% if alerta.tipo == 'modificado' and alerta.documento.estado != 'rechazado' %}
+                        <form action="{% url 'documentos:cambiar_estado' alerta.documento.id 'rechazar' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="motivo_rechazo" value="RECHAZO AUTOMÁTICO POR SEGURIDAD: El hash del archivo no coincide (Integridad Comprometida).">
+                            <button type="submit" class="btn btn-danger btn-sm fw-bold shadow-sm">
+                                <i class="bi bi-shield-x me-1"></i> Rechazar por Seguridad
+                            </button>
+                        </form>
+                    {% elif alerta.documento.estado == 'rechazado' %}
+                        <span class="badge bg-danger">Ya rechazado</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 <div class="d-flex justify-content-between align-items-start mb-4">
   <div>
       <h2 class="h3 fw-bold text-dark mb-1">{{ caso.rol_rit }}</h2>

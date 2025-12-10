@@ -41,6 +41,7 @@ class Documento(models.Model):
     version = models.PositiveIntegerField(default=1, editable=False)
     fecha_subida = models.DateTimeField(auto_now_add=True)
     hash_archivo = models.CharField(max_length=64, blank=True, null=True)
+    hash_fallido = models.CharField(max_length=64, blank=True, null=True, editable=False)
 
     class Meta:
         ordering = ['causa', 'folio']
@@ -68,6 +69,27 @@ class Documento(models.Model):
                 self.estado = 'aprobado'
 
         super().save(*args, **kwargs)
+    
+    def verificar_integridad(self):
+        if not self.archivo or not self.hash_archivo:
+            return True, None
+
+        try:
+            sha256 = hashlib.sha256()
+            with open(self.archivo.path, 'rb') as f:
+                for chunk in f:
+                    sha256.update(chunk)
+            
+            hash_actual = sha256.hexdigest()
+            
+            # Comparamos
+            es_valido = (hash_actual == self.hash_archivo)
+            return es_valido, hash_actual
+            
+        except FileNotFoundError:
+            return None, None # Archivo borrado
+        except Exception:
+            return False, None # Error lectura
 
     def delete(self, *args, **kwargs):
         if self.archivo:
