@@ -19,7 +19,11 @@ def calendario(request):
     citas = Cita.objects.filter(fecha_hora__gte=inicio_dia).order_by('fecha_hora')
     
     if request.user.rol == 'estudiante':
-        citas = citas.filter(responsable=request.user)
+        from django.db.models import Q
+        citas = citas.filter(
+            Q(responsable=request.user) | 
+            Q(causa__responsable=request.user)
+        ).distinct()
     
     context = {
         'citas': citas,

@@ -5,9 +5,11 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2 class="h4 mb-0">Personas Atendidas</h2>
+  {% if user.rol in 'director secretaria admin' %}
   <a href="{% url 'personas:crear_cliente' %}" class="btn btn-primary btn-sm">
     <i class="bi bi-person-plus"></i> + Nueva Persona
   </a>
+  {% endif %}
 </div>
 
 <div class="card shadow-sm border-0">
@@ -20,8 +22,12 @@
             <th>Nombre Completo</th>
             <th>Teléfono</th>
             <th>Email</th>
+            {% if user.rol in 'director secretaria admin' %}
             <th>Fecha Registro</th>
             <th class="text-end">Acciones</th>
+            {% else %}
+            <th class="text-end">Fecha Registro</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -31,12 +37,16 @@
               <td>{{ persona.nombres }} {{ persona.apellidos }}</td>
               <td>{{ persona.telefono|default:"-" }}</td>
               <td>{{ persona.email|default:"-" }}</td>
+              {% if user.rol in 'director secretaria admin' %}
               <td>{{ persona.fecha_registro|date:"d/m/Y" }}</td>
               <td class="text-end">
                 <a href="{% url 'personas:editar_cliente' persona.id %}" class="btn btn-sm btn-outline-secondary">
                   Editar
                 </a>
               </td>
+              {% else %}
+              <td class="text-end">{{ persona.fecha_registro|date:"d/m/Y" }}</td>
+              {% endif %}
             </tr>
           {% empty %}
             <tr>

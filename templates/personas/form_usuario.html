@@ -37,7 +37,14 @@
             <div class="col-md-6">
                 <label class="form-label fw-semibold">RUT</label>
                 {{ form.rut }}
+                <div class="text-danger small">{{ form.rut.errors.0 }}</div>
             </div>
+            
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Teléfono</label>
+                {{ form.telefono }} <div class="text-danger small">{{ form.telefono.errors.0 }}</div>
+            </div>
+
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Email</label>
                 {{ form.email }}
@@ -73,4 +80,35 @@
     </div>
   </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Buscamos el input por el ID que definimos en forms.py (inputRutUser)
+        const rutInput = document.getElementById('inputRutUser');
+
+        if (rutInput) {
+            rutInput.addEventListener('input', function(e) {
+                let valor = e.target.value.replace(/[^0-9kK]/g, '').toUpperCase();
+                
+                if (valor.length > 1) {
+                    // Separar cuerpo y dígito verificador
+                    const cuerpo = valor.slice(0, -1);
+                    const dv = valor.slice(-1);
+                    
+                    // Formatear cuerpo con puntos
+                    let cuerpoFormateado = "";
+                    for (let i = cuerpo.length - 1, j = 1; i >= 0; i--, j++) {
+                        cuerpoFormateado = cuerpo.charAt(i) + cuerpoFormateado;
+                        if (j % 3 === 0 && i !== 0) {
+                            cuerpoFormateado = "." + cuerpoFormateado;
+                        }
+                    }
+                    e.target.value = `${cuerpoFormateado}-${dv}`;
+                } else {
+                    e.target.value = valor;
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

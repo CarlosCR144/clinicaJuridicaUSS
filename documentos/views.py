@@ -1,20 +1,21 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import CreateView
+from django.views.generic import CreateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.contrib import messages
+from django.utils import timezone
 
 from .models import Documento
 from .forms import DocumentoForm
 from casos.models import Causa, Bitacora
+from personas.mixins import SoloStaffMixin, SoloSupervisorMixin, SoloDirectorMixin, SoloEstudianteMixin
 
-class SubirDocumentoView(LoginRequiredMixin, CreateView):
+class SubirDocumentoView(SoloDirectorMixin, SoloSupervisorMixin, SoloEstudianteMixin, LoginRequiredMixin, CreateView):
     model = Documento
     form_class = DocumentoForm
     template_name = 'documentos/subir_documento.html'
-
+    
     def dispatch(self, request, *args, **kwargs):
-        # Capturamos la causa desde la URL antes de procesar nada
         self.causa = get_object_or_404(Causa, pk=self.kwargs['caso_id'])
         return super().dispatch(request, *args, **kwargs)
 
@@ -24,28 +25,56 @@ class SubirDocumentoView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        # 1. Completar datos automáticos del documento
         documento = form.save(commit=False)
         documento.causa = self.causa
         documento.subido_por = self.request.user
-        documento.save() # Aquí se dispara la lógica del modelo (Foliación + Hash)
+        documento.save()
 
-        # 2. LOG DE BITÁCORA (TRAZABILIDAD)
         Bitacora.objects.create(
             causa=self.causa,
             usuario=self.request.user,
-            accion='archivo', # 'archivo' debe estar en tus choices de Bitacora
-            detalle=f"Se subió documento: {documento.nombre} (Folio {documento.folio})"
+            accion='archivo',
+            detalle=f"Se subió documento: {documento.nombre} (Folio {documento.folio}) - Estado: {documento.get_estado_display()}"
         )
 
-        messages.success(self.request, "Documento subido y foliado correctamente.")
+        messages.success(self.request, "Documento subido. Queda pendiente de revisión por el Supervisor.")
         return super().form_valid(form)
 
     def get_success_url(self):
-        # Volver al detalle del caso
         return reverse('casos:detalle', kwargs={'pk': self.causa.pk})
 
-# Funciones antiguas placeholders
-def lista_documentos(request): return render(request, 'documentos/lista_documentos.html')
-def subir_documento_general(request): return render(request, 'documentos/subir_documento.html')
-def subir_documento_caso(request, caso_id): return render(request, 'documentos/subir_documento.html')
+class CambiarEstadoDocumentoView(SoloSupervisorMixin, SoloDirectorMixin, LoginRequiredMixin, View):
+    def post(self, request, pk, accion):
+        doc = get_object_or_404(Documento, pk=pk)
+        
+        # Validar permisos extra si quieres ser estricto (solo supervisor/director)
+        if request.user.rol not in ['director', 'supervisor']:
+             messages.error(request, "No tienes permisos para aprobar documentos.")
+             return redirect('casos:detalle', pk=doc.causa.pk)
+
+        if accion == 'aprobar':
+            doc.estado = 'aprobado'
+            doc.aprobado_por = request.user
+            doc.fecha_aprobacion = timezone.now()
+            doc.observaciones_rechazo = "" # Limpiamos rechazos previos si los hubo
+            msg = f"Documento '{doc.nombre}' APROBADO."
+            
+        elif accion == 'rechazar':
+            doc.estado = 'rechazado'
+            # Capturamos el motivo desde un input en el template (ver Paso 3)
+            motivo = request.POST.get('motivo_rechazo', 'Sin motivo especificado')
+            doc.observaciones_rechazo = motivo
+            msg = f"Documento '{doc.nombre}' RECHAZADO."
+
+        doc.save()
+
+        # Registro en Bitácora
+        Bitacora.objects.create(
+            causa=doc.causa,
+            usuario=request.user,
+            accion='actualizacion', # O 'nota'
+            detalle=f"Revisión Documento (Folio {doc.folio}): {doc.get_estado_display()}. {doc.observaciones_rechazo}"
+        )
+
+        messages.success(request, msg)
+        return redirect('casos:detalle', pk=doc.causa.pk)

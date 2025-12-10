@@ -20,6 +20,7 @@ class CausaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # SE PODRÍA AÑADIR DIRECTOR
         self.fields['responsable'].queryset = User.objects.filter(rol__in=['estudiante', 'supervisor'])
         self.fields['responsable'].label = "Estudiante Responsable"
         self.fields['responsable'].required = False

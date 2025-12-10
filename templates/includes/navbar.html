@@ -4,24 +4,53 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
+    
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
         {% if user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="#">Mis Casos</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Agenda</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'casos:lista' %}">
+                    <i class="bi bi-folder2-open"></i> Casos
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'agenda:calendario' %}">
+                    <i class="bi bi-calendar3"></i> Agenda
+                </a>
+            </li>
+
+            {% if user.rol in 'supervisor director secretaria estudiante admin' %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'personas:lista_clientes' %}">
+                    <i class="bi bi-people"></i> Clientes
+                </a>
+            </li>
+            {% endif %}
+
+            {% if user.rol == 'director' or user.rol == 'admin' %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'personas:lista_usuarios' %}">
+                    <i class="bi bi-person-gear"></i> Usuarios Staff
+                </a>
+            </li>
+            {% endif %}
         {% endif %}
       </ul>
+      
       <ul class="navbar-nav">
         {% if user.is_authenticated %}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                    Hola, {{ user.first_name }} ({{ user.rol }})
+                    <i class="bi bi-person-circle"></i> {{ user.first_name }} ({{ user.get_rol_display }})
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
                         <form action="{% url 'logout' %}" method="post">
                             {% csrf_token %}
-                            <button type="submit" class="dropdown-item">Cerrar Sesión</button>
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                            </button>
                         </form>
                     </li>
                 </ul>

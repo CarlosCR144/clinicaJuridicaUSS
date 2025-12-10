@@ -151,28 +151,76 @@
     <div class="card shadow-sm border-0 mb-3">
       <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
         <span>Documentos del caso</span>
-        </div>
+      </div>
       <div class="card-body">
         <ul class="list-group list-group-flush mb-3">
           {% for doc in documentos %}
-            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-              <div>
-                <div class="fw-semibold">{{ doc.nombre }}</div>
+            <li class="list-group-item d-flex justify-content-between align-items-start px-0">
+              <div class="ms-2 me-auto">
+                <div class="fw-semibold">
+                    {{ doc.nombre }}
+                    {% if doc.estado == 'pendiente' %}
+                        <span class="badge text-bg-warning">Pendiente</span>
+                    {% elif doc.estado == 'rechazado' %}
+                        <span class="badge text-bg-danger">Rechazado</span>
+                    {% else %}
+                        <span class="badge text-bg-success">Oficial</span>
+                    {% endif %}
+                </div>
                 <div class="small text-muted">Folio: {{ doc.folio }} · {{ doc.fecha_subida|date:"d/m/Y" }}</div>
+                
+                {% if doc.estado == 'rechazado' and doc.observaciones_rechazo %}
+                    <div class="small text-danger mt-1">
+                        <strong>Motivo rechazo:</strong> {{ doc.observaciones_rechazo }}
+                    </div>
+                {% endif %}
               </div>
-              <a href="{{ doc.archivo.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Ver</a>
+
+              <div class="d-flex flex-column gap-2 align-items-end">
+                  <a href="{{ doc.archivo.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Ver</a>
+                  
+                  {% if user.rol == 'supervisor' or user.rol == 'director' %}
+                    {% if doc.estado == 'pendiente' %}
+                        <div class="btn-group btn-group-sm">
+                            <form action="{% url 'documentos:cambiar_estado' doc.id 'aprobar' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success" title="Aprobar">
+                                    <i class="bi bi-check"></i>
+                                </button>
+                            </form>
+                            
+                            <button type="button" class="btn btn-danger" data-bs-toggle="collapse" data-bs-target="#rechazo-{{ doc.id }}">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    {% endif %}
+                  {% endif %}
+              </div>
             </li>
+            
+            {% if user.rol == 'supervisor' or user.rol == 'director' %}
+            <div class="collapse w-100 mt-2" id="rechazo-{{ doc.id }}">
+                <form action="{% url 'documentos:cambiar_estado' doc.id 'rechazar' %}" method="post" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <input type="text" name="motivo_rechazo" class="form-control form-control-sm" placeholder="Motivo del rechazo..." required>
+                    <button type="submit" class="btn btn-sm btn-danger">Confirmar</button>
+                </form>
+            </div>
+            {% endif %}
+
           {% empty %}
             <li class="list-group-item text-muted px-0">
               No hay documentos cargados.
             </li>
           {% endfor %}
         </ul>
+        {% if user.rol in 'director supervisor estudiante' %}
         <div class="d-grid">
            <a href="{% url 'documentos:subir' caso.id %}" class="btn btn-primary">
             Subir nuevo documento
           </a>
         </div>
+        {% endif %}
       </div>
     </div>
 

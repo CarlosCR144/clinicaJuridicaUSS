@@ -1,10 +1,13 @@
 # personas/urls.py
 from django.urls import path
 from . import views
+from django.views.generic import RedirectView
 
 app_name = 'personas'
 
 urlpatterns = [
+    path('', RedirectView.as_view(pattern_name='personas:lista_clientes'), name='index'),
+    
     # Gestión de Usuarios
     path('usuarios/', views.UsuarioListView.as_view(), name='lista_usuarios'),
     path('usuarios/nuevo/', views.UsuarioCreateView.as_view(), name='crear_usuario'),

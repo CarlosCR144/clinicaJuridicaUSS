@@ -24,7 +24,7 @@ class Causa(models.Model):
         ('archivada', 'Archivada'),
     )
 
-    rol_rit = models.CharField(max_length=50, verbose_name="RIT/Rol")
+    rol_rit = models.CharField(max_length=50, verbose_name="RIT/Rol", unique=True)
     caratula = models.CharField(max_length=200)
     fecha_ingreso = models.DateField(auto_now_add=True)
     

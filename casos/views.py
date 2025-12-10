@@ -24,7 +24,6 @@ class CausaListView(LoginRequiredMixin, ListView):
         queryset = super().get_queryset()
         usuario = self.request.user
 
-        # Si es Estudiante, SOLO ve casos donde es responsable
         if usuario.rol == 'estudiante':
             queryset = queryset.filter(responsable=usuario)
         
@@ -32,7 +31,16 @@ class CausaListView(LoginRequiredMixin, ListView):
         if q:
             queryset = queryset.filter(caratula__icontains=q) | queryset.filter(rol_rit__icontains=q)
         
+        estado = self.request.GET.get('estado')
+        if estado:
+            queryset = queryset.filter(estado=estado)
+            
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['estados_posibles'] = Causa.ESTADOS 
+        return context
 
 class CausaCreateView(SoloDirectorMixin, LoginRequiredMixin, CreateView):
     model = Causa
@@ -230,8 +238,3 @@ class CambiarEstadoCasoView(LoginRequiredMixin, View):
             messages.success(request, f"Estado actualizado: {caso.get_estado_display()}")
         
         return redirect('casos:detalle', pk=pk)
-
-# Funciones antiguas
-def lista_casos(request): return render(request, 'casos/lista_casos.html')
-def crear_caso(request): return render(request, 'casos/crear_caso.html')
-def detalle_caso(request, pk): return render(request, 'casos/detalle_caso.html')

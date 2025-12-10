@@ -7,26 +7,29 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Usuario, Persona
 from .forms import PersonaForm, UsuarioForm
-from .mixins import SoloDirectorMixin
-
-# NO SE USA
-def lista_usuarios(request):
-    return render(request, 'personas/lista_usuarios.html', {'usuarios': []})
-
-# NO SE USA
-def crear_usuario(request):
-    return render(request, 'personas/lista_usuarios.html')  # luego lo cambias a un form
-
-# AUN SE MANTIENE LA URL
-def detalle_usuario(request, pk):
-    return render(request, 'personas/detalle_usuario.html', {})  # luego agregas datos
+from .mixins import SoloDirectorMixin, SoloStaffMixin
 
 # --- Vistas para USUARIOS (Staff/Estudiantes) ---
 class UsuarioListView(SoloDirectorMixin, LoginRequiredMixin, ListView):
     model = Usuario
     template_name = 'personas/lista_usuarios.html'
     context_object_name = 'usuarios'
-    ordering = ['rol', 'username']
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # Filtro por Rol desde la URL (?rol=estudiante)
+        rol_filter = self.request.GET.get('rol')
+        if rol_filter:
+            queryset = queryset.filter(rol=rol_filter)
+            
+        return queryset.order_by('rol', 'username')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pasamos el rol actual para activar la pestaña correspondiente
+        context['rol_actual'] = self.request.GET.get('rol', '')
+        return context
 
 class UsuarioCreateView(SoloDirectorMixin, LoginRequiredMixin, CreateView):
     model = Usuario
@@ -63,7 +66,7 @@ class PersonaListView(LoginRequiredMixin, ListView):
     context_object_name = 'personas'
     ordering = ['-fecha_registro']
 
-class PersonaCreateView(LoginRequiredMixin, CreateView):
+class PersonaCreateView(SoloStaffMixin, LoginRequiredMixin, CreateView):
     model = Persona
     form_class = PersonaForm
     template_name = 'personas/form_persona.html'
@@ -72,7 +75,7 @@ class PersonaCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         return super().form_valid(form)
 
-class PersonaUpdateView(LoginRequiredMixin, UpdateView):
+class PersonaUpdateView(SoloStaffMixin, LoginRequiredMixin, UpdateView):
     model = Persona
     form_class = PersonaForm
     template_name = 'personas/form_persona.html'
