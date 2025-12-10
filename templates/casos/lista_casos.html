@@ -14,14 +14,13 @@
   <div class="card-body">
     <form method="get" class="row g-2">
       <div class="col-md-4">
-        <input type="text" name="q" value="{{ request.GET.q }}"
-               class="form-control" placeholder="Buscar por cliente, RUT, número de caso...">
+        <input type="text" name="q" value="{{ request.GET.q|default:'' }}"
+               class="form-control" placeholder="Buscar por cliente, RIT, carátula...">
       </div>
       <div class="col-md-3">
         <select name="estado" class="form-select">
           <option value="">Todos los estados</option>
-          <!-- luego llenas con tus estados -->
-        </select>
+          </select>
       </div>
       <div class="col-md-2">
         <button class="btn btn-outline-primary w-100" type="submit">
@@ -38,26 +37,34 @@
       <table class="table table-hover mb-0 align-middle">
         <thead class="table-light">
           <tr>
-            <th>N° Caso</th>
+            <th>RIT / Rol</th>
+            <th>Carátula</th>
             <th>Cliente</th>
-            <th>Tipo</th>
+            <th>Materia</th>
             <th>Estado</th>
             <th>Responsable</th>
-            <th>Fecha creación</th>
+            <th>Fecha Ingreso</th>
             <th class="text-end">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {% for caso in casos %}
             <tr>
-              <td>{{ caso.numero }}</td>
+              <td class="fw-semibold">{{ caso.rol_rit }}</td>
+              <td>{{ caso.caratula }}</td>
               <td>{{ caso.cliente }}</td>
-              <td>{{ caso.tipo_display }}</td>
+              <td>{{ caso.materia }}</td>
               <td>
-                <span class="badge text-bg-info">{{ caso.estado_display }}</span>
+                {% if caso.estado == 'archivada' %}
+                    <span class="badge text-bg-secondary">{{ caso.get_estado_display }}</span>
+                {% elif caso.estado == 'con_sentencia' %}
+                    <span class="badge text-bg-success">{{ caso.get_estado_display }}</span>
+                {% else %}
+                    <span class="badge text-bg-info">{{ caso.get_estado_display }}</span>
+                {% endif %}
               </td>
-              <td>{{ caso.responsable }}</td>
-              <td>{{ caso.fecha_creacion|date:"d/m/Y" }}</td>
+              <td>{{ caso.responsable.get_full_name|default:caso.responsable.username }}</td>
+              <td>{{ caso.fecha_ingreso|date:"d/m/Y" }}</td>
               <td class="text-end">
                 <a href="{% url 'casos:detalle' caso.id %}"
                    class="btn btn-sm btn-outline-secondary">
@@ -67,8 +74,8 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="7" class="text-center py-4 text-muted">
-                No se encontraron casos.
+              <td colspan="8" class="text-center py-4 text-muted">
+                No se encontraron casos registrados.
               </td>
             </tr>
           {% endfor %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white fw-bold">
+        {{ titulo }}
+      </div>
+      <div class="card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Nombre de Usuario</label>
+                {{ form.username }}
+                <div class="text-danger small">{{ form.username.errors.0 }}</div>
+            </div>
+            
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Rol / Perfil</label>
+                {{ form.rol }}
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Nombre</label>
+                {{ form.first_name }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Apellido</label>
+                {{ form.last_name }}
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">RUT</label>
+                {{ form.rut }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Email</label>
+                {{ form.email }}
+            </div>
+
+            <div class="col-12">
+                <hr>
+                <label class="form-label fw-semibold">Contraseña</label>
+                {{ form.password }}
+                {% if form.password.help_text %}
+                    <div class="form-text">{{ form.password.help_text }}</div>
+                {% endif %}
+                <div class="text-danger small">{{ form.password.errors.0 }}</div>
+            </div>
+
+            <div class="col-12">
+                <hr>
+                <label class="form-label fw-semibold">Confirmar Contraseña</label>
+                {{ form.password_confirm }}
+                {% if form.password_confirm.help_text %}
+                    <div class="form-text">{{ form.password_confirm.help_text }}</div>
+                {% endif %}
+                <div class="text-danger small">{{ form.password_confirm.errors.0 }}</div>
+            </div>
+          </div>
+
+          <div class="mt-4 d-flex justify-content-end gap-2">
+            <a href="{% url 'personas:lista_usuarios' %}" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

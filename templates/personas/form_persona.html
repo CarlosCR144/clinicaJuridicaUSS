@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Registro de Persona{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white fw-bold">
+        {% if form.instance.pk %}Editar Persona{% else %}Registrar Nueva Persona{% endif %}
+      </div>
+      <div class="card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          
+          <div class="row g-3">
+            {% for field in form %}
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger small">{{ field.errors.0 }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="mt-4 d-flex justify-content-end gap-2">
+            <a href="{% url 'personas:lista_clientes' %}" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar Información</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const rutInput = document.getElementById('inputRut');
+
+        if (rutInput) {
+            rutInput.addEventListener('input', function(e) {
+                let valor = e.target.value.replace(/[^0-9kK]/g, '').toUpperCase();
+                
+                if (valor.length > 1) {
+                    // Separar cuerpo y dígito verificador
+                    const cuerpo = valor.slice(0, -1);
+                    const dv = valor.slice(-1);
+                    
+                    // Formatear cuerpo con puntos
+                    let cuerpoFormateado = "";
+                    for (let i = cuerpo.length - 1, j = 1; i >= 0; i--, j++) {
+                        cuerpoFormateado = cuerpo.charAt(i) + cuerpoFormateado;
+                        if (j % 3 === 0 && i !== 0) {
+                            cuerpoFormateado = "." + cuerpoFormateado;
+                        }
+                    }
+                    e.target.value = `${cuerpoFormateado}-${dv}`;
+                } else {
+                    e.target.value = valor;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

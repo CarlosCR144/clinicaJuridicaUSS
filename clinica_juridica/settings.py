@@ -147,3 +147,9 @@ AUTH_USER_MODEL = 'personas.Usuario'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
+
+# URL base para acceder a los archivos (ej: http://localhost:8000/media/...)
+MEDIA_URL = '/media/'
+
+# Ruta física en tu disco duro donde se guardarán
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

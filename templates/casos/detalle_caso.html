@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Detalle del caso {{ caso.numero }}{% endblock %}
+{% block title %}Detalle del caso {{ caso.rol_rit }}{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h2 class="h4 mb-0">Caso {{ caso.numero }}</h2>
+  <h2 class="h4 mb-0">Caso: {{ caso.rol_rit }} <span class="text-muted fs-6">| {{ caso.caratula }}</span></h2>
+  {% if user.rol == 'director' or user.rol == 'supervisor' %}
+        <a href="{% url 'casos:editar' caso.id %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+      {% endif %}
   <a href="{% url 'casos:lista' %}" class="btn btn-outline-secondary btn-sm">
     Volver a la lista
   </a>
@@ -12,34 +17,131 @@
 
 <div class="row g-3">
   <div class="col-md-7">
+
+    {% if user.rol == 'director' or user.rol == 'supervisor' %}
+    <div class="card shadow-sm border-0 mb-3 border-start border-4 border-primary">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="fw-bold mb-1">Gestión del Expediente</h6>
+                <div class="small text-muted">Estado actual: <span class="badge text-bg-dark">{{ caso.get_estado_display }}</span></div>
+            </div>
+            
+            <div class="d-flex gap-2">
+                {% if caso.estado == 'en_estudio' and user.rol == 'director' %}
+                    <form action="{% url 'casos:cambiar_estado' caso.id 'rechazar' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Declarar INADMISIBLE y archivar este caso?')">
+                            Rechazar
+                        </button>
+                    </form>
+                    
+                    <form action="{% url 'casos:cambiar_estado' caso.id 'admitir' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('¿Declarar ADMISIBLE e iniciar tramitación?')">
+                            <i class="bi bi-check-lg"></i> Admitir Causa
+                        </button>
+                    </form>
+                {% endif %}
+
+                {% if caso.estado == 'en_tramite' %}
+                    <form action="{% url 'casos:cambiar_estado' caso.id 'finalizar' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('¿Marcar caso como FINALIZADO con sentencia?')">
+                            Sentencia / Cierre
+                        </button>
+                    </form>
+                    
+                    <form action="{% url 'casos:cambiar_estado' caso.id 'archivar' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-secondary btn-sm" onclick="return confirm('¿Archivar caso sin sentencia?')">
+                            Archivar
+                        </button>
+                    </form>
+                {% endif %}
+                
+                {% if caso.estado == 'archivada' or caso.estado == 'con_sentencia' %}
+                    <span class="text-muted small fst-italic">Expediente cerrado.</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="card shadow-sm border-0 mb-3">
       <div class="card-header bg-white fw-bold">
         Información general
       </div>
       <div class="card-body">
-        <p><strong>Cliente:</strong> {{ caso.cliente }}</p>
-        <p><strong>Tipo de caso:</strong> {{ caso.tipo_display }}</p>
-        <p><strong>Estado actual:</strong> {{ caso.estado_display }}</p>
-        <p><strong>Responsable:</strong> {{ caso.responsable }}</p>
-        <p><strong>Descripción:</strong></p>
+        <div class="row mb-2">
+            <div class="col-sm-4 text-muted">Cliente:</div>
+            <div class="col-sm-8 fw-semibold">{{ caso.cliente }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-4 text-muted">Tribunal:</div>
+            <div class="col-sm-8">{{ caso.tribunal }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-4 text-muted">Materia:</div>
+            <div class="col-sm-8">{{ caso.materia }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-4 text-muted">Estado actual:</div>
+            <div class="col-sm-8">{{ caso.get_estado_display }}</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-4 text-muted">Responsable:</div>
+            <div class="col-sm-8">{{ caso.responsable.get_full_name }}</div>
+        </div>
+        
+        <hr>
+        <p class="mb-1 text-muted">Descripción:</p>
         <p>{{ caso.descripcion|linebreaks }}</p>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-3">
+      <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+        <span>Participantes / Intervinientes</span>
+        <a href="{% url 'casos:crear_participante' caso.id %}" class="btn btn-sm btn-outline-primary py-0">
+            + Agregar
+        </a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <tbody>
+                <tr class="table-light">
+                    <td class="ps-3 fw-semibold">{{ caso.cliente }}</td>
+                    <td><span class="badge text-bg-primary">Cliente Principal</span></td>
+                    <td class="text-muted small">Titular de la causa</td>
+                </tr>
+                
+                {% for part in caso.participantes.all %}
+                <tr>
+                    <td class="ps-3">{{ part.persona }}</td>
+                    <td><span class="badge text-bg-secondary">{{ part.get_rol_display }}</span></td>
+                    <td class="text-muted small">{{ part.observaciones|default:"-"|truncatechars:30 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
       </div>
     </div>
 
     <div class="card shadow-sm border-0">
       <div class="card-header bg-white fw-bold">
-        Bitácora / comentarios
+        Bitácora / Historial
       </div>
       <div class="card-body">
-        {% for comentario in comentarios %}
+        {% for log in caso.historial.all %}
           <div class="mb-3 pb-3 border-bottom">
-            <div class="small text-muted">
-              {{ comentario.fecha|date:"d/m/Y H:i" }} · {{ comentario.autor }}
+            <div class="d-flex justify-content-between small text-muted">
+              <span>{{ log.fecha|date:"d/m/Y H:i" }} · {{ log.usuario.get_full_name }}</span>
+              <span class="badge text-bg-light">{{ log.get_accion_display }}</span>
             </div>
-            <div>{{ comentario.texto|linebreaks }}</div>
+            <div class="mt-1">{{ log.detalle|linebreaks }}</div>
           </div>
         {% empty %}
-          <p class="text-muted mb-0">Aún no hay comentarios registrados.</p>
+          <p class="text-muted mb-0">Aún no hay movimientos registrados en este caso.</p>
         {% endfor %}
       </div>
     </div>
@@ -47,39 +149,45 @@
 
   <div class="col-md-5">
     <div class="card shadow-sm border-0 mb-3">
-      <div class="card-header bg-white fw-bold">
-        Documentos del caso
-      </div>
+      <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+        <span>Documentos del caso</span>
+        </div>
       <div class="card-body">
-        <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush mb-3">
           {% for doc in documentos %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <span>{{ doc.nombre }}</span>
-              <a href="{{ doc.archivo.url }}" class="btn btn-sm btn-outline-primary">Ver</a>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <div>
+                <div class="fw-semibold">{{ doc.nombre }}</div>
+                <div class="small text-muted">Folio: {{ doc.folio }} · {{ doc.fecha_subida|date:"d/m/Y" }}</div>
+              </div>
+              <a href="{{ doc.archivo.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Ver</a>
             </li>
           {% empty %}
-            <li class="list-group-item text-muted">
+            <li class="list-group-item text-muted px-0">
               No hay documentos cargados.
             </li>
           {% endfor %}
         </ul>
-        <div class="mt-3 text-end">
-          <a href="{% url 'documentos:subir' caso.id %}" class="btn btn-sm btn-primary">
-            Subir documento
+        <div class="d-grid">
+           <a href="{% url 'documentos:subir' caso.id %}" class="btn btn-primary">
+            Subir nuevo documento
           </a>
         </div>
       </div>
     </div>
 
     <div class="card shadow-sm border-0">
-      <div class="card-header bg-white fw-bold">
-        Próximas citas
+      <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+        <span>Próximas citas</span>
+        <a href="{% url 'agenda:agendar_caso' caso.id %}" class="btn btn-sm btn-outline-primary py-0">
+            + Agendar
+        </a>
       </div>
       <div class="card-body">
         {% for cita in citas %}
-          <div class="mb-2">
-            <div class="fw-semibold">{{ cita.fecha|date:"d/m/Y H:i" }}</div>
+          <div class="mb-2 border-start border-3 border-warning ps-2"> <div class="fw-semibold">{{ cita.fecha_hora|date:"d/m/Y H:i" }}</div>
             <div class="small text-muted">{{ cita.lugar }}</div>
+            <div class="small">{{ cita.get_tipo_display }}</div>
           </div>
         {% empty %}
           <p class="text-muted mb-0">No hay citas programadas.</p>

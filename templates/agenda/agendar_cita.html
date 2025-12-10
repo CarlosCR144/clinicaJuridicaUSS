@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Agendar Cita · {{ caso.rol_rit }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white fw-bold">
+        Agendar Cita / Audiencia
+      </div>
+      <div class="card-body">
+        
+        <div class="alert alert-light border d-flex align-items-center mb-4">
+            <div class="me-3 fs-1 text-muted"><i class="bi bi-calendar-event"></i></div>
+            <div>
+                <h6 class="mb-0">Caso: {{ caso.rol_rit }}</h6>
+                <small class="text-muted">{{ caso.caratula }}</small>
+            </div>
+        </div>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+          
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Tipo de Evento</label>
+                {{ form.tipo }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Fecha y Hora</label>
+                {{ form.fecha_hora }}
+                {% if form.fecha_hora.errors %}<div class="text-danger small">{{ form.fecha_hora.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Lugar / Plataforma</label>
+                {{ form.lugar }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Duración (min)</label>
+                {{ form.duracion }}
+            </div>
+
+            <div class="col-12">
+                <label class="form-label fw-semibold">Con quién (Opcional)</label>
+                {{ form.persona_atendida }}
+                <div class="form-text">Muestra solo personas vinculadas a este caso.</div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label fw-semibold">Observaciones</label>
+                {{ form.observaciones }}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'casos:detalle' caso.id %}" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar en Agenda</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

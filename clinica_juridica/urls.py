@@ -3,6 +3,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
+from casos import views as casos_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -10,7 +13,7 @@ urlpatterns = [
     # Página de inicio
     path(
         '',
-        TemplateView.as_view(template_name='home.html'),
+        casos_views.home,
         name='home'
     ),
 
@@ -32,3 +35,6 @@ urlpatterns = [
     path('agenda/', include(('agenda.urls', 'agenda'), namespace='agenda')),
     path('documentos/', include(('documentos.urls', 'documentos'), namespace='documentos')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

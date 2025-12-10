@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if form.instance.pk %}Editar Causa{% else %}Nueva Causa{% endif %} · Clínica Jurídica
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white fw-bold py-3">
+        <h4 class="h5 mb-0">
+          {% if form.instance.pk %}Editar Causa{% else %}Registrar Nueva Causa{% endif %}
+        </h4>
+      </div>
+      <div class="card-body p-4">
+        
+        <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
+          <div>
+            <small>
+              <strong>Nota:</strong> Asegúrate de que el Cliente ya esté registrado en el sistema antes de crear la causa.
+              Si no existe, <a href="{% url 'personas:crear_cliente' %}" class="alert-link">regístralo aquí</a>.
+            </small>
+          </div>
+        </div>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+          
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <div class="row g-3">
+            
+            <div class="col-md-4">
+              <label for="{{ form.rol_rit.id_for_label }}" class="form-label fw-semibold">RIT / ROL</label>
+              {{ form.rol_rit }}
+              {% if form.rol_rit.errors %}
+                <div class="text-danger small mt-1">{{ form.rol_rit.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-8">
+              <label for="{{ form.caratula.id_for_label }}" class="form-label fw-semibold">Carátula</label>
+              {{ form.caratula }}
+              {% if form.caratula.errors %}
+                <div class="text-danger small mt-1">{{ form.caratula.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.tribunal.id_for_label }}" class="form-label fw-semibold">Tribunal</label>
+              {{ form.tribunal }}
+              {% if form.tribunal.errors %}
+                <div class="text-danger small mt-1">{{ form.tribunal.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.materia.id_for_label }}" class="form-label fw-semibold">Materia</label>
+              {{ form.materia }}
+              {% if form.materia.errors %}
+                <div class="text-danger small mt-1">{{ form.materia.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.cliente.id_for_label }}" class="form-label fw-semibold">Cliente (Persona Atendida)</label>
+              {{ form.cliente }}
+              {% if form.cliente.errors %}
+                <div class="text-danger small mt-1">{{ form.cliente.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.responsable.id_for_label }}" class="form-label fw-semibold">Estudiante Responsable</label>
+              {{ form.responsable }}
+              {% if form.responsable.errors %}
+                <div class="text-danger small mt-1">{{ form.responsable.errors.0 }}</div>
+              {% endif %}
+              <div class="form-text">Si lo dejas vacío, te asignarás tú mismo como responsable.</div>
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-semibold">Descripción del Caso</label>
+              {{ form.descripcion }}
+              {% if form.descripcion.errors %}
+                <div class="text-danger small mt-1">{{ form.descripcion.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+          </div>
+
+          <div class="mt-4 d-flex justify-content-end gap-2">
+            <a href="{% url 'casos:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar Causa</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -6,5 +6,5 @@ app_name = 'agenda'
 
 urlpatterns = [
     path('', views.calendario, name='calendario'),         # /agenda/
-    path('nueva/', views.agendar_cita, name='agendar'),    # /agenda/nueva/
+    path('caso/<int:caso_id>/nueva/', views.AgendarCitaView.as_view(), name='agendar_caso'),    # /agenda/caso/1/nueva/
 ]
