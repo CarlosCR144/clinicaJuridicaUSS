@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Cambiar contraseña{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+
+        <div class="text-center mb-4">
+          <i class="bi bi-shield-lock text-primary fs-1"></i>
+          <h4 class="fw-bold mt-2">Cambiar contraseña</h4>
+          <p class="text-muted small mb-0">
+            Actualiza tu contraseña para mantener tu cuenta segura
+          </p>
+        </div>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors.0 }}
+            </div>
+          {% endif %}
+
+          <!-- Contraseña actual -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              Contraseña actual
+            </label>
+            <input
+              type="password"
+              name="old_password"
+              class="form-control"
+              placeholder="Ingresa tu contraseña actual"
+              required
+            >
+            {% if form.old_password.errors %}
+              <div class="text-danger small">{{ form.old_password.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <br>
+          
+          <!-- Nueva contraseña -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              Nueva contraseña
+            </label>
+            <input
+              type="password"
+              name="new_password1"
+              class="form-control"
+              placeholder="Nueva contraseña"
+              required
+            >
+            {% if form.new_password1.errors %}
+              <div class="text-danger small">{{ form.new_password1.errors.0 }}</div>
+            {% endif %}
+
+        <br>
+
+          <!-- Confirmar contraseña -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              Confirmar nueva contraseña
+            </label>
+            <input
+              type="password"
+              name="new_password2"
+              class="form-control"
+              placeholder="Repite la nueva contraseña"
+              required
+            >
+            {% if form.new_password2.errors %}
+              <div class="text-danger small">{{ form.new_password2.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary rounded-pill">
+              <i class="bi bi-check-circle me-1"></i>
+              Actualizar contraseña
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

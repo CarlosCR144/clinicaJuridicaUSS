@@ -29,6 +29,16 @@ urlpatterns = [
         name='logout'
     ),
 
+    # cambio de contraseña directo con django
+    path(
+        'cambiar_contraseña/',
+        auth_views.PasswordChangeView.as_view(
+            template_name='personas/cambiar_contra.html',
+            success_url='/'
+        ),
+        name='cambiar_contra'
+    ),
+
     # Apps del proyecto
     path('personas/', include(('personas.urls', 'personas'), namespace='personas')),
     path('casos/', include(('casos.urls', 'casos'), namespace='casos')),

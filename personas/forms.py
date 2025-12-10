@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Persona, Usuario
+from django.contrib.auth.forms import PasswordChangeForm
 from .validators import validar_rut_chileno
 import re
 from django.contrib.auth import get_user_model
@@ -164,3 +165,24 @@ class UsuarioForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+
+class PasswordChangeFormBootstrap(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['old_password'].label = "Contraseña actual"
+        self.fields['new_password1'].label = "Nueva contraseña"
+        self.fields['new_password2'].label = "Confirmar nueva contraseña"
+
+        self.fields['new_password1'].help_text = (
+            "<ul class='mb-0'>"
+            "<li>Mínimo 8 caracteres</li>"
+            "<li>No debe parecerse a tus datos personales</li>"
+            "<li>No puede ser una contraseña común</li>"
+            "<li>No puede ser solo números</li>"
+            "</ul>"
+        )
+
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})

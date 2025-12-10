@@ -27,8 +27,8 @@
         <h1>Reporte de Pruebas Automatizadas</h1>
         <div class="summary">
             <div class="stat total"><strong>10</strong>Total</div>
-            <div class="stat pass"><strong>0</strong>Aprobadas</div>
-            <div class="stat fail"><strong>10</strong>Rechazadas</div>
+            <div class="stat pass"><strong>10</strong>Aprobadas</div>
+            <div class="stat fail"><strong>0</strong>Rechazadas</div>
         </div>
         <table>
             <thead><tr><th>Prueba</th><th>Descripción</th><th>Estado</th><th>Detalles</th></tr></thead>
@@ -37,66 +37,66 @@
             <tr>
                 <td><b>Crear Usuario Director</b></td>
                 <td>Verificar que se puede instanciar un usuario con rol de director correctamente.</td>
-                <td><span class="badge error">ERROR</span></td>
-                <td>Excepción inesperada: (1130, "Host '127.0.0.1' is not allowed to connect to this MySQL server")</td>
+                <td><span class="badge aprobado">APROBADO</span></td>
+                <td>Comportamiento esperado verificado.</td>
             </tr>
             <tr>
                 <td><b>Crear Persona Completa</b></td>
                 <td>Verificar creación de un objeto Persona con todos sus campos.</td>
-                <td><span class="badge error">ERROR</span></td>
-                <td>Excepción inesperada: (1130, "Host '127.0.0.1' is not allowed to connect to this MySQL server")</td>
+                <td><span class="badge aprobado">APROBADO</span></td>
+                <td>Comportamiento esperado verificado.</td>
             </tr>
             <tr>
                 <td><b>Verificar Roles del Sistema</b></td>
                 <td>Asegurar que las opciones de roles (ROL_CHOICES) contienen los roles críticos.</td>
-                <td><span class="badge error">ERROR</span></td>
-                <td>Excepción inesperada: (1130, "Host '127.0.0.1' is not allowed to connect to this MySQL server")</td>
+                <td><span class="badge aprobado">APROBADO</span></td>
+                <td>Comportamiento esperado verificado.</td>
             </tr>
             <tr>
                 <td><b>Representación String Usuario</b></td>
                 <td>Verificar que el método __str__ de Usuario devuelve el formato '{Nombre} {Apellido} ({Rol})'.</td>
-                <td><span class="badge error">ERROR</span></td>
-                <td>Excepción inesperada: (1130, "Host '127.0.0.1' is not allowed to connect to this MySQL server")</td>
+                <td><span class="badge aprobado">APROBADO</span></td>
+                <td>Comportamiento esperado verificado.</td>
             </tr>
             <tr>
                 <td><b>Representación String Persona</b></td>
                 <td>Verificar que el método __str__ de Persona incluye nombre y RUT.</td>
-                <td><span class="badge error">ERROR</span></td>
-                <td>Excepción inesperada: (1130, "Host '127.0.0.1' is not allowed to connect to this MySQL server")</td>
+                <td><span class="badge aprobado">APROBADO</span></td>
+                <td>Comportamiento esperado verificado.</td>
             </tr>
             <tr>
                 <td><b>Rol por Defecto</b></td>
                 <td>Verificar que si no se especifica rol, se asigne el default (estudiante).</td>
-                <td><span class="badge error">ERROR</span></td>
-                <td>Excepción inesperada: (1130, "Host '127.0.0.1' is not allowed to connect to this MySQL server")</td>
+                <td><span class="badge aprobado">APROBADO</span></td>
+                <td>Comportamiento esperado verificado.</td>
             </tr>
             <tr>
                 <td><b>Restricción RUT Único (Schema)</b></td>
                 <td>Verificar que el campo RUT en Usuario tiene unique=True en la definición del modelo.</td>
-                <td><span class="badge error">ERROR</span></td>
-                <td>Excepción inesperada: (1130, "Host '127.0.0.1' is not allowed to connect to this MySQL server")</td>
+                <td><span class="badge aprobado">APROBADO</span></td>
+                <td>Comportamiento esperado verificado.</td>
             </tr>
             <tr>
                 <td><b>Campos Nulos Persona (Schema)</b></td>
                 <td>Verificar que email es opcional (null/blank=True).</td>
-                <td><span class="badge error">ERROR</span></td>
-                <td>Excepción inesperada: (1130, "Host '127.0.0.1' is not allowed to connect to this MySQL server")</td>
+                <td><span class="badge aprobado">APROBADO</span></td>
+                <td>Comportamiento esperado verificado.</td>
             </tr>
             <tr>
                 <td><b>Unicidad de Email</b></td>
                 <td>Verificar que el sistema impida registrar dos Personas con el mismo email.</td>
-                <td><span class="badge error">ERROR</span></td>
-                <td>Excepción inesperada: (1130, "Host '127.0.0.1' is not allowed to connect to this MySQL server")</td>
+                <td><span class="badge aprobado">APROBADO</span></td>
+                <td>Comportamiento esperado verificado.</td>
             </tr>
             <tr>
                 <td><b>Formato Numérico Teléfono</b></td>
                 <td>Verificar que el sistema rechace teléfonos con letras.</td>
-                <td><span class="badge error">ERROR</span></td>
-                <td>Excepción inesperada: (1130, "Host '127.0.0.1' is not allowed to connect to this MySQL server")</td>
+                <td><span class="badge aprobado">APROBADO</span></td>
+                <td>Comportamiento esperado verificado.</td>
             </tr>
             </tbody>
         </table>
-        <p style="text-align: center; color: #777; margin-top: 20px;">Generado: 2025-12-10 16:13:19</p>
+        <p style="text-align: center; color: #777; margin-top: 20px;">Generado: 2025-12-10 16:36:45</p>
     </div>
 </body>
 </html>

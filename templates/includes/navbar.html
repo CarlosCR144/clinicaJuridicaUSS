@@ -54,6 +54,15 @@
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
+                    <!-- Cambiar contraseña -->
+                    <li>
+                        <a href="{% url 'cambiar_contra' %}"
+                        class="dropdown-item d-flex align-items-center gap-2 py-2">
+                            <i class="bi bi-shield-lock"></i> Cambiar contraseña
+                        </a>
+                    </li>
+
+                    <li><hr class="dropdown-divider"></li>
                     <li>
                         <form action="{% url 'logout' %}" method="post">
                             {% csrf_token %}
