@@ -1,17 +1,21 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}Iniciar Sesión · Clínica Jurídica{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center align-items-center min-vh-75 py-5">
   <div class="col-md-5 col-lg-4">
     <div class="text-center mb-4">
-        <div class="d-inline-block bg-primary text-white rounded-3 p-3 mb-3 shadow-sm">
-            <i class="bi bi-bank2 fs-1"></i>
+          <img src="{% static 'svg/USShorizontal-tagline-ilumina-dark.svg' %}"
+               alt="Logo USS" 
+               class="img-fluid mb-3" 
+               style="height: 55px; width: auto; scale: 1.5;">
+          
+          <h4 class="fw-bold text-dark">Clínica Jurídica</h4>
+          <p class="text-muted small mb-0">
+            Acceso al Sistema de Gestión
+          </p>
         </div>
-        <h2 class="h4 fw-bold text-dark">Clínica Jurídica</h2>
-        <p class="text-muted">Acceso al Sistema de Gestión</p>
-    </div>
 
     <div class="card card-modern shadow-lg border-0">
       <div class="card-body p-4 p-md-5">

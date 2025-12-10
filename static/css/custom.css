@@ -278,3 +278,16 @@ body {
 .input-group:focus-within .form-control {
     border-color: var(--accent-color);
 }
+
+@media (max-width: 400px) {
+    .navbar-custom .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .navbar-brand img {
+        height: 28px !important; /* Reduce un poco el logo */
+    }
+    .small-brand-text {
+        display: none !important; /* Oculta el texto secundario si no cabe */
+    }
+}
