@@ -7,7 +7,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Usuario, Persona
 from .forms import PersonaForm, UsuarioForm
-from .mixins import SoloDirectorMixin, SoloStaffMixin
+from .mixins import SoloDirectorMixin, SoloStaffMixin, RolRequiredMixin
 
 # --- Vistas para USUARIOS (Staff/Estudiantes) ---
 class UsuarioListView(SoloDirectorMixin, LoginRequiredMixin, ListView):
@@ -66,7 +66,8 @@ class PersonaListView(LoginRequiredMixin, ListView):
     context_object_name = 'personas'
     ordering = ['-fecha_registro']
 
-class PersonaCreateView(SoloStaffMixin, LoginRequiredMixin, CreateView):
+class PersonaCreateView(RolRequiredMixin, LoginRequiredMixin, CreateView):
+    roles_permitidos = ['director', 'secretaria', 'admin']
     model = Persona
     form_class = PersonaForm
     template_name = 'personas/form_persona.html'
@@ -75,7 +76,8 @@ class PersonaCreateView(SoloStaffMixin, LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         return super().form_valid(form)
 
-class PersonaUpdateView(SoloStaffMixin, LoginRequiredMixin, UpdateView):
+class PersonaUpdateView(RolRequiredMixin, LoginRequiredMixin, UpdateView):
+    roles_permitidos = ['director', 'secretaria', 'admin']
     model = Persona
     form_class = PersonaForm
     template_name = 'personas/form_persona.html'

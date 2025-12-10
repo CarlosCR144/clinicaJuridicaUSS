@@ -111,9 +111,52 @@ class CausaDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         
         context['documentos'] = self.object.documentos.all().order_by('folio')
-        
         context['citas'] = self.object.citas.all().order_by('fecha_hora')
         
+        # VALIDACIÓN DE INTEGRIDAD INTELIGENTE
+        alertas_integridad = []
+        
+        for doc in context['documentos']:
+            # Desempaquetamos la tupla (Estado, Hash Actual)
+            es_valido, hash_actual = doc.verificar_integridad()
+            
+            if es_valido is False: # Hash no coincide (Modificado)
+                
+                # 1. Siempre mostramos la alerta visual en pantalla
+                alertas_integridad.append({
+                    'tipo': 'modificado',
+                    'mensaje': f"El documento '{doc.nombre}' (Folio {doc.folio}) ha sido modificado externamente.",
+                    'documento': doc
+                })
+                
+                # 2. Lógica Anti-Spam de Bitácora
+                # Solo registramos si es una modificación NUEVA (hash distinto al último error)
+                if hash_actual != doc.hash_fallido:
+                    Bitacora.objects.create(
+                        causa=self.object,
+                        usuario=self.request.user,
+                        accion='nota', # O 'seguridad'
+                        detalle=f"ALERTA SEGURIDAD CRÍTICA: Hash inconsistente en documento ID {doc.id}. (Nuevo hash detectado)"
+                    )
+                    
+                    # Actualizamos la "memoria" del error
+                    doc.hash_fallido = hash_actual
+                    doc.save(update_fields=['hash_fallido'])
+
+            elif es_valido is None: # Archivo borrado físicamente
+                alertas_integridad.append({
+                    'tipo': 'perdido',
+                    'mensaje': f"ERROR CRÍTICO: El archivo físico del documento '{doc.nombre}' no se encuentra en el servidor.",
+                    'documento': doc
+                })
+            
+            elif es_valido is True:
+                # Autocuración: Si el archivo se arregló (volvió a ser el original), limpiamos la bandera de error
+                if doc.hash_fallido:
+                    doc.hash_fallido = None
+                    doc.save(update_fields=['hash_fallido'])
+
+        context['alertas_integridad'] = alertas_integridad
         return context
 
 # -------- Participantes
