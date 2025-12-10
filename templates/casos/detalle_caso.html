@@ -1,247 +1,322 @@
 {% extends "base.html" %}
 
-{% block title %}Detalle del caso {{ caso.rol_rit }}{% endblock %}
+{% block title %}Caso {{ caso.rol_rit }}{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2 class="h4 mb-0">Caso: {{ caso.rol_rit }} <span class="text-muted fs-6">| {{ caso.caratula }}</span></h2>
-  {% if user.rol == 'director' or user.rol == 'supervisor' %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+      <h2 class="h3 fw-bold text-dark mb-1">{{ caso.rol_rit }}</h2>
+      <p class="text-muted mb-0 fs-5">{{ caso.caratula }}</p>
+  </div>
+  <div class="d-flex gap-2">
+      {% if user.rol == 'director' or user.rol == 'supervisor' %}
         <a href="{% url 'casos:editar' caso.id %}" class="btn btn-outline-primary btn-sm">
-            <i class="bi bi-pencil"></i> Editar
+            <i class="bi bi-pencil me-1"></i> Editar
         </a>
       {% endif %}
-  <a href="{% url 'casos:lista' %}" class="btn btn-outline-secondary btn-sm">
-    Volver a la lista
-  </a>
+      <a href="{% url 'casos:lista' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Volver
+      </a>
+  </div>
 </div>
 
-<div class="row g-3">
-  <div class="col-md-7">
+<div class="row g-4">
+  <div class="col-lg-8">
 
     {% if user.rol == 'director' or user.rol == 'supervisor' %}
-    <div class="card shadow-sm border-0 mb-3 border-start border-4 border-primary">
+    <div class="card card-modern mb-4 border-start border-4 border-primary">
         <div class="card-body d-flex justify-content-between align-items-center">
             <div>
-                <h6 class="fw-bold mb-1">Gestión del Expediente</h6>
-                <div class="small text-muted">Estado actual: <span class="badge text-bg-dark">{{ caso.get_estado_display }}</span></div>
+                <h6 class="fw-bold mb-1 text-primary">Control de Estado</h6>
+                <div class="small">Actual: <span class="fw-semibold">{{ caso.get_estado_display }}</span></div>
             </div>
-            
             <div class="d-flex gap-2">
                 {% if caso.estado == 'en_estudio' and user.rol == 'director' %}
-                    <form action="{% url 'casos:cambiar_estado' caso.id 'rechazar' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Declarar INADMISIBLE y archivar este caso?')">
-                            Rechazar
-                        </button>
-                    </form>
+                    <button type="button" class="btn btn-outline-danger btn-sm" 
+                            data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                            data-action-url="{% url 'casos:cambiar_estado' caso.id 'rechazar' %}"
+                            data-title="Rechazar Causa"
+                            data-message="¿Estás seguro de declarar INADMISIBLE esta causa? Se archivará el expediente."
+                            data-btn-class="btn-danger" data-btn-text="Rechazar">
+                        Rechazar
+                    </button>
                     
-                    <form action="{% url 'casos:cambiar_estado' caso.id 'admitir' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('¿Declarar ADMISIBLE e iniciar tramitación?')">
-                            <i class="bi bi-check-lg"></i> Admitir Causa
-                        </button>
-                    </form>
+                    <button type="button" class="btn btn-success btn-sm text-white" 
+                            data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                            data-action-url="{% url 'casos:cambiar_estado' caso.id 'admitir' %}"
+                            data-title="Admitir Causa"
+                            data-message="¿Declarar ADMISIBLE e iniciar tramitación?"
+                            data-btn-class="btn-success" data-btn-text="Admitir">
+                        <i class="bi bi-check-lg me-1"></i> Admitir
+                    </button>
                 {% endif %}
 
                 {% if caso.estado == 'en_tramite' %}
-                    <form action="{% url 'casos:cambiar_estado' caso.id 'finalizar' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary btn-sm" onclick="return confirm('¿Marcar caso como FINALIZADO con sentencia?')">
-                            Sentencia / Cierre
-                        </button>
-                    </form>
-                    
-                    <form action="{% url 'casos:cambiar_estado' caso.id 'archivar' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-secondary btn-sm" onclick="return confirm('¿Archivar caso sin sentencia?')">
-                            Archivar
-                        </button>
-                    </form>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" 
+                            data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                            data-action-url="{% url 'casos:cambiar_estado' caso.id 'archivar' %}"
+                            data-title="Archivar Causa"
+                            data-message="¿Deseas archivar este caso sin sentencia?"
+                            data-btn-class="btn-secondary" data-btn-text="Archivar">
+                        Archivar
+                    </button>
+
+                    <button type="button" class="btn btn-primary btn-sm" 
+                            data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                            data-action-url="{% url 'casos:cambiar_estado' caso.id 'finalizar' %}"
+                            data-title="Finalizar Causa"
+                            data-message="¿Marcar caso como FINALIZADO con sentencia? Esta acción cerrará el expediente."
+                            data-btn-class="btn-primary" data-btn-text="Finalizar">
+                        Sentencia / Cierre
+                    </button>
                 {% endif %}
                 
                 {% if caso.estado == 'archivada' or caso.estado == 'con_sentencia' %}
-                    <span class="text-muted small fst-italic">Expediente cerrado.</span>
+                    <span class="badge bg-secondary">Cerrado</span>
                 {% endif %}
             </div>
         </div>
     </div>
     {% endif %}
 
-    <div class="card shadow-sm border-0 mb-3">
-      <div class="card-header bg-white fw-bold">
-        Información general
+    <div class="card card-modern mb-4">
+      <div class="card-header-modern">
+        <i class="bi bi-info-circle me-2"></i>Información General
       </div>
       <div class="card-body">
-        <div class="row mb-2">
-            <div class="col-sm-4 text-muted">Cliente:</div>
-            <div class="col-sm-8 fw-semibold">{{ caso.cliente }}</div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Cliente</small>
+                <span class="fs-5">{{ caso.cliente }}</span>
+            </div>
+            <div class="col-md-6">
+                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Responsable</small>
+                <div class="d-flex align-items-center mt-1">
+                    <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center me-2" style="width: 28px; height: 28px; font-size: 0.8rem;">
+                        {{ caso.responsable.first_name|slice:":1" }}
+                    </div>
+                    <span>{{ caso.responsable.get_full_name }}</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Tribunal</small>
+                {{ caso.tribunal }}
+            </div>
+            <div class="col-md-4">
+                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Materia</small>
+                {{ caso.materia }}
+            </div>
+            <div class="col-md-4">
+                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Ingreso</small>
+                {{ caso.fecha_ingreso|date:"d M Y" }}
+            </div>
+            <div class="col-12 pt-2">
+                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Descripción</small>
+                <p class="mb-0 mt-1 text-secondary" style="white-space: pre-line;">{{ caso.descripcion }}</p>
+            </div>
         </div>
-        <div class="row mb-2">
-            <div class="col-sm-4 text-muted">Tribunal:</div>
-            <div class="col-sm-8">{{ caso.tribunal }}</div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-sm-4 text-muted">Materia:</div>
-            <div class="col-sm-8">{{ caso.materia }}</div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-sm-4 text-muted">Estado actual:</div>
-            <div class="col-sm-8">{{ caso.get_estado_display }}</div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-sm-4 text-muted">Responsable:</div>
-            <div class="col-sm-8">{{ caso.responsable.get_full_name }}</div>
-        </div>
-        
-        <hr>
-        <p class="mb-1 text-muted">Descripción:</p>
-        <p>{{ caso.descripcion|linebreaks }}</p>
       </div>
     </div>
 
-    <div class="card shadow-sm border-0 mb-3">
-      <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-        <span>Participantes / Intervinientes</span>
-        <a href="{% url 'casos:crear_participante' caso.id %}" class="btn btn-sm btn-outline-primary py-0">
-            + Agregar
+    <div class="card card-modern mb-4">
+      <div class="card-header-modern d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-people me-2"></i>Intervinientes</span>
+        <a href="{% url 'casos:crear_participante' caso.id %}" class="btn btn-sm btn-light text-primary fw-bold">
+            <i class="bi bi-plus"></i> Agregar
         </a>
       </div>
-      <div class="card-body p-0">
-        <table class="table table-hover mb-0">
+      <div class="table-responsive">
+         <table class="table table-custom mb-0">
             <tbody>
-                <tr class="table-light">
-                    <td class="ps-3 fw-semibold">{{ caso.cliente }}</td>
-                    <td><span class="badge text-bg-primary">Cliente Principal</span></td>
-                    <td class="text-muted small">Titular de la causa</td>
-                </tr>
-                
                 {% for part in caso.participantes.all %}
                 <tr>
-                    <td class="ps-3">{{ part.persona }}</td>
-                    <td><span class="badge text-bg-secondary">{{ part.get_rol_display }}</span></td>
-                    <td class="text-muted small">{{ part.observaciones|default:"-"|truncatechars:30 }}</td>
+                    <td class="fw-medium">{{ part.persona }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ part.get_rol_display }}</span></td>
+                    <td class="text-muted small">{{ part.observaciones|default:""|truncatechars:40 }}</td>
                 </tr>
+                {% empty %}
+                <tr><td colspan="3" class="text-center text-muted small py-3">Solo el cliente principal registrado.</td></tr>
                 {% endfor %}
             </tbody>
-        </table>
+         </table>
       </div>
     </div>
 
-    <div class="card shadow-sm border-0">
-      <div class="card-header bg-white fw-bold">
-        Bitácora / Historial
+    <div class="card card-modern">
+      <div class="card-header-modern">
+        <i class="bi bi-clock-history me-2"></i>Historial de Movimientos
       </div>
       <div class="card-body">
+        <div class="vstack gap-3">
         {% for log in caso.historial.all %}
-          <div class="mb-3 pb-3 border-bottom">
-            <div class="d-flex justify-content-between small text-muted">
-              <span>{{ log.fecha|date:"d/m/Y H:i" }} · {{ log.usuario.get_full_name }}</span>
-              <span class="badge text-bg-light">{{ log.get_accion_display }}</span>
+          <div class="d-flex gap-3">
+            <div class="d-flex flex-column align-items-center">
+                <div class="rounded-circle bg-light border d-flex justify-content-center align-items-center" style="width: 32px; height: 32px;">
+                    <i class="bi bi-activity text-muted"></i>
+                </div>
+                {% if not forloop.last %}<div class="bg-light flex-grow-1 my-1" style="width: 2px;"></div>{% endif %}
             </div>
-            <div class="mt-1">{{ log.detalle|linebreaks }}</div>
+            <div class="pb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="badge bg-light text-dark border">{{ log.get_accion_display }}</span>
+                    <small class="text-muted">{{ log.fecha|date:"d/m/Y H:i" }}</small>
+                </div>
+                <p class="mb-0 small text-secondary">{{ log.detalle }}</p>
+                <small class="text-muted fst-italic" style="font-size: 0.75rem;">Por: {{ log.usuario.get_full_name }}</small>
+            </div>
           </div>
         {% empty %}
-          <p class="text-muted mb-0">Aún no hay movimientos registrados en este caso.</p>
+          <div class="text-center text-muted py-3">Sin movimientos registrados.</div>
         {% endfor %}
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="col-md-5">
-    <div class="card shadow-sm border-0 mb-3">
-      <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-        <span>Documentos del caso</span>
+  <div class="col-lg-4">
+    
+    <div class="card card-modern mb-4">
+      <div class="card-header-modern d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-files me-2"></i>Expediente Digital</span>
       </div>
-      <div class="card-body">
-        <ul class="list-group list-group-flush mb-3">
+      <div class="card-body p-0">
+        <div class="list-group list-group-flush">
           {% for doc in documentos %}
-            <li class="list-group-item d-flex justify-content-between align-items-start px-0">
-              <div class="ms-2 me-auto">
-                <div class="fw-semibold">
-                    {{ doc.nombre }}
-                    {% if doc.estado == 'pendiente' %}
-                        <span class="badge text-bg-warning">Pendiente</span>
-                    {% elif doc.estado == 'rechazado' %}
-                        <span class="badge text-bg-danger">Rechazado</span>
-                    {% else %}
-                        <span class="badge text-bg-success">Oficial</span>
-                    {% endif %}
-                </div>
-                <div class="small text-muted">Folio: {{ doc.folio }} · {{ doc.fecha_subida|date:"d/m/Y" }}</div>
-                
-                {% if doc.estado == 'rechazado' and doc.observaciones_rechazo %}
-                    <div class="small text-danger mt-1">
-                        <strong>Motivo rechazo:</strong> {{ doc.observaciones_rechazo }}
-                    </div>
+            <div class="list-group-item px-3 py-3 border-bottom-0 border-top">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="fw-semibold text-truncate me-2">{{ doc.nombre }}</div>
+                {% if doc.estado == 'pendiente' %}
+                    <i class="bi bi-hourglass-split text-warning" title="Pendiente"></i>
+                {% elif doc.estado == 'rechazado' %}
+                    <i class="bi bi-x-circle-fill text-danger" title="Rechazado"></i>
+                {% else %}
+                    <i class="bi bi-check-circle-fill text-success" title="Oficial"></i>
                 {% endif %}
               </div>
-
-              <div class="d-flex flex-column gap-2 align-items-end">
-                  <a href="{{ doc.archivo.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Ver</a>
-                  
-                  {% if user.rol == 'supervisor' or user.rol == 'director' %}
-                    {% if doc.estado == 'pendiente' %}
-                        <div class="btn-group btn-group-sm">
-                            <form action="{% url 'documentos:cambiar_estado' doc.id 'aprobar' %}" method="post">
+              <div class="d-flex justify-content-between align-items-end">
+                  <small class="text-muted">Folio {{ doc.folio }}</small>
+                  <div class="btn-group">
+                      <a href="{{ doc.archivo.url }}" target="_blank" class="btn btn-xs btn-light text-primary" title="Ver"><i class="bi bi-eye"></i></a>
+                      
+                      {% if user.rol == 'supervisor' or user.rol == 'director' %}
+                        {% if doc.estado == 'pendiente' %}
+                            <form action="{% url 'documentos:cambiar_estado' doc.id 'aprobar' %}" method="post" class="d-inline">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-success" title="Aprobar">
-                                    <i class="bi bi-check"></i>
-                                </button>
+                                <button type="submit" class="btn btn-xs btn-success ms-1"><i class="bi bi-check"></i></button>
                             </form>
-                            
-                            <button type="button" class="btn btn-danger" data-bs-toggle="collapse" data-bs-target="#rechazo-{{ doc.id }}">
-                                <i class="bi bi-x"></i>
-                            </button>
-                        </div>
-                    {% endif %}
-                  {% endif %}
+                            <button class="btn btn-xs btn-danger ms-1" data-bs-toggle="collapse" data-bs-target="#rechazo-{{ doc.id }}"><i class="bi bi-x"></i></button>
+                        {% endif %}
+                      {% endif %}
+                  </div>
               </div>
-            </li>
-            
-            {% if user.rol == 'supervisor' or user.rol == 'director' %}
-            <div class="collapse w-100 mt-2" id="rechazo-{{ doc.id }}">
-                <form action="{% url 'documentos:cambiar_estado' doc.id 'rechazar' %}" method="post" class="d-flex gap-2">
+              
+              {% if user.rol == 'supervisor' or user.rol == 'director' %}
+              <div class="collapse mt-2" id="rechazo-{{ doc.id }}">
+                <form action="{% url 'documentos:cambiar_estado' doc.id 'rechazar' %}" method="post" class="input-group input-group-sm">
                     {% csrf_token %}
-                    <input type="text" name="motivo_rechazo" class="form-control form-control-sm" placeholder="Motivo del rechazo..." required>
-                    <button type="submit" class="btn btn-sm btn-danger">Confirmar</button>
+                    <input type="text" name="motivo_rechazo" class="form-control" placeholder="Motivo..." required>
+                    <button class="btn btn-danger" type="submit">OK</button>
                 </form>
+              </div>
+              {% endif %}
+              
+              {% if doc.estado == 'rechazado' %}
+                <small class="d-block text-danger mt-1 bg-danger bg-opacity-10 p-1 rounded">Nota: {{ doc.observaciones_rechazo }}</small>
+              {% endif %}
             </div>
-            {% endif %}
-
           {% empty %}
-            <li class="list-group-item text-muted px-0">
-              No hay documentos cargados.
-            </li>
+            <div class="p-4 text-center text-muted small">No hay documentos.</div>
           {% endfor %}
-        </ul>
+        </div>
+        
         {% if user.rol in 'director supervisor estudiante' %}
-        <div class="d-grid">
-           <a href="{% url 'documentos:subir' caso.id %}" class="btn btn-primary">
-            Subir nuevo documento
+        <div class="p-3 border-top bg-light">
+           <a href="{% url 'documentos:subir' caso.id %}" class="btn btn-outline-primary btn-sm w-100 border-dashed">
+            <i class="bi bi-cloud-upload me-1"></i> Subir Documento
           </a>
         </div>
         {% endif %}
       </div>
     </div>
 
-    <div class="card shadow-sm border-0">
-      <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
-        <span>Próximas citas</span>
-        <a href="{% url 'agenda:agendar_caso' caso.id %}" class="btn btn-sm btn-outline-primary py-0">
-            + Agendar
-        </a>
+    <div class="card card-modern">
+      <div class="card-header-modern d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-calendar-event me-2"></i>Agenda</span>
       </div>
-      <div class="card-body">
+      <div class="card-body p-0">
         {% for cita in citas %}
-          <div class="mb-2 border-start border-3 border-warning ps-2"> <div class="fw-semibold">{{ cita.fecha_hora|date:"d/m/Y H:i" }}</div>
-            <div class="small text-muted">{{ cita.lugar }}</div>
-            <div class="small">{{ cita.get_tipo_display }}</div>
+          <div class="p-3 border-bottom d-flex gap-3">
+            <div class="text-center">
+                <span class="d-block fw-bold text-dark">{{ cita.fecha_hora|date:"d" }}</span>
+                <span class="d-block small text-muted text-uppercase">{{ cita.fecha_hora|date:"M" }}</span>
+            </div>
+            <div>
+                <div class="fw-semibold text-primary">{{ cita.get_tipo_display }}</div>
+                <small class="text-dark d-block">{{ cita.fecha_hora|time:"H:i" }} hrs</small>
+                <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ cita.lugar }}</small>
+            </div>
           </div>
         {% empty %}
-          <p class="text-muted mb-0">No hay citas programadas.</p>
+          <div class="p-4 text-center text-muted small">No hay eventos próximos.</div>
         {% endfor %}
+        
+        <div class="p-3 border-top bg-light">
+            <a href="{% url 'agenda:agendar_caso' caso.id %}" class="btn btn-outline-primary btn-sm w-100 border-dashed">
+                <i class="bi bi-plus-lg me-1"></i> Agendar Evento
+            </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold" id="modalTitle">Confirmar Acción</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-4">
+        <p class="text-muted mb-0" id="modalMessage">¿Estás seguro?</p>
+      </div>
+      <div class="modal-footer border-top-0 pt-0">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        
+        <form id="modalForm" method="post" action="">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" id="modalConfirmBtn">Confirmar</button>
+        </form>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var confirmModal = document.getElementById('confirmActionModal');
+        confirmModal.addEventListener('show.bs.modal', function (event) {
+            // Botón que disparó el modal
+            var button = event.relatedTarget;
+            
+            // Extraer datos del botón
+            var title = button.getAttribute('data-title');
+            var message = button.getAttribute('data-message');
+            var url = button.getAttribute('data-action-url');
+            var btnClass = button.getAttribute('data-btn-class');
+            var btnText = button.getAttribute('data-btn-text');
+
+            // Actualizar el modal
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('modalForm').action = url;
+            
+            var confirmBtn = document.getElementById('modalConfirmBtn');
+            confirmBtn.className = 'btn ' + btnClass;
+            confirmBtn.textContent = btnText;
+        });
+    });
+</script>
+
 {% endblock %}

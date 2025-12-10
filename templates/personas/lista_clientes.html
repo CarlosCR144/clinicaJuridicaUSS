@@ -3,20 +3,25 @@
 {% block title %}Clientes de la Clínica{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2 class="h4 mb-0">Personas Atendidas</h2>
-  {% if user.rol in 'director secretaria admin' %}
-  <a href="{% url 'personas:crear_cliente' %}" class="btn btn-primary btn-sm">
-    <i class="bi bi-person-plus"></i> + Nueva Persona
-  </a>
-  {% endif %}
+<div class="row mb-4 align-items-center">
+  <div class="col">
+    <h2 class="h3 fw-bold text-dark mb-0">Personas Atendidas</h2>
+    <p class="text-muted small mb-0">Base de datos de clientes y requirentes.</p>
+  </div>
+  <div class="col-auto">
+    {% if user.rol in 'director secretaria admin' %}
+    <a href="{% url 'personas:crear_cliente' %}" class="btn btn-primary shadow-sm">
+      <i class="bi bi-person-plus me-1"></i> Nueva Persona
+    </a>
+    {% endif %}
+  </div>
 </div>
 
-<div class="card shadow-sm border-0">
+<div class="card card-modern">
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table table-hover mb-0 align-middle">
-        <thead class="table-light">
+      <table class="table table-custom table-hover mb-0 table-mobile-responsive">
+        <thead>
           <tr>
             <th>RUT</th>
             <th>Nombre Completo</th>
@@ -33,25 +38,29 @@
         <tbody>
           {% for persona in personas %}
             <tr>
-              <td>{{ persona.rut }}</td>
-              <td>{{ persona.nombres }} {{ persona.apellidos }}</td>
-              <td>{{ persona.telefono|default:"-" }}</td>
-              <td>{{ persona.email|default:"-" }}</td>
-              {% if user.rol in 'director secretaria admin' %}
-              <td>{{ persona.fecha_registro|date:"d/m/Y" }}</td>
-              <td class="text-end">
-                <a href="{% url 'personas:editar_cliente' persona.id %}" class="btn btn-sm btn-outline-secondary">
-                  Editar
-                </a>
+              <td data-label="RUT">
+                  <span class="fw-bold text-primary">{{ persona.rut }}</span>
               </td>
+              <td data-label="Nombre">{{ persona.nombres }} {{ persona.apellidos }}</td>
+              <td data-label="Teléfono">{{ persona.telefono|default:"-" }}</td>
+              <td data-label="Email">{{ persona.email|default:"-" }}</td>
+              
+              {% if user.rol in 'director secretaria admin' %}
+                <td data-label="Registro">{{ persona.fecha_registro|date:"d/m/Y" }}</td>
+                <td class="text-end" data-label="Acciones">
+                    <a href="{% url 'personas:editar_cliente' persona.id %}" class="btn btn-sm btn-light text-primary border-0">
+                    <i class="bi bi-pencil-square"></i> Editar
+                    </a>
+                </td>
               {% else %}
-              <td class="text-end">{{ persona.fecha_registro|date:"d/m/Y" }}</td>
+                <td class="text-end" data-label="Registro">{{ persona.fecha_registro|date:"d/m/Y" }}</td>
               {% endif %}
             </tr>
           {% empty %}
             <tr>
-              <td colspan="6" class="text-center py-4 text-muted">
-                No hay personas registradas. ¡Agrega la primera!
+              <td colspan="6" class="text-center py-5">
+                <i class="bi bi-people fs-1 text-muted opacity-50 mb-2"></i>
+                <p class="text-muted mb-0">No hay personas registradas.</p>
               </td>
             </tr>
           {% endfor %}

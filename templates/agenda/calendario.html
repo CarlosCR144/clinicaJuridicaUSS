@@ -3,23 +3,25 @@
 {% block title %}Agenda General · Clínica Jurídica{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <div>
-      <h2 class="h4 mb-0">Agenda de la Clínica</h2>
-      <p class="text-muted small mb-0">Próximas audiencias y reuniones programadas</p>
+<div class="row mb-4 align-items-center">
+  <div class="col">
+      <h2 class="h3 fw-bold text-dark mb-0">Agenda Global</h2>
+      <p class="text-muted small mb-0">Programación de audiencias y reuniones.</p>
   </div>
-  <a href="{% url 'casos:lista' %}" class="btn btn-outline-primary btn-sm">
-    <i class="bi bi-plus-lg"></i> Agendar desde un Caso
-  </a>
+  <div class="col-auto">
+      <a href="{% url 'casos:lista' %}" class="btn btn-outline-primary shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Agendar desde Caso
+      </a>
+  </div>
 </div>
 
-<div class="card shadow-sm border-0">
+<div class="card card-modern">
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table table-hover mb-0 align-middle">
-        <thead class="table-light">
+      <table class="table table-custom table-hover mb-0 table-mobile-responsive">
+        <thead>
           <tr>
-            <th>Fecha y Hora</th>
+            <th>Fecha / Hora</th>
             <th>Tipo</th>
             <th>Caso (RIT)</th>
             <th>Lugar</th>
@@ -31,51 +33,51 @@
         <tbody>
           {% for cita in citas %}
             <tr>
-              <td>
-                  <div class="fw-bold text-primary">{{ cita.fecha_hora|date:"d/m/Y" }}</div>
+              <td data-label="Fecha">
+                  <div class="fw-bold text-primary">{{ cita.fecha_hora|date:"d M Y" }}</div>
                   <div class="small text-muted">{{ cita.fecha_hora|time:"H:i" }} hrs</div>
               </td>
               
-              <td>
+              <td data-label="Tipo">
                 {% if cita.tipo == 'audiencia' %}
-                    <span class="badge text-bg-warning">Audiencia</span>
+                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1">Audiencia</span>
                 {% elif cita.tipo == 'reunion_cliente' %}
-                    <span class="badge text-bg-info">Reunión Cliente</span>
+                    <span class="badge bg-info bg-opacity-10 text-info border border-info px-2 py-1">Reunión</span>
                 {% else %}
-                    <span class="badge text-bg-light border">{{ cita.get_tipo_display }}</span>
+                    <span class="badge bg-light text-dark border">{{ cita.get_tipo_display }}</span>
                 {% endif %}
               </td>
 
-              <td>
-                  <a href="{% url 'casos:detalle' cita.causa.id %}" class="text-decoration-none fw-semibold">
+              <td data-label="Caso">
+                  <a href="{% url 'casos:detalle' cita.causa.id %}" class="fw-semibold text-decoration-none">
                       {{ cita.causa.rol_rit }}
                   </a>
                   <div class="small text-muted text-truncate" style="max-width: 150px;">{{ cita.causa.caratula }}</div>
               </td>
 
-              <td>{{ cita.lugar }}</td>
+              <td data-label="Lugar">{{ cita.lugar }}</td>
 
-              <td>
+              <td data-label="Con quién">
                   {% if cita.persona_atendida %}
                     {{ cita.persona_atendida }}
                   {% else %}
-                    <span class="text-muted fst-italic">-</span>
+                    <span class="text-muted">-</span>
                   {% endif %}
               </td>
 
-              <td>{{ cita.responsable.get_full_name|default:cita.responsable.username }}</td>
+              <td data-label="Responsable">{{ cita.responsable.get_full_name|default:cita.responsable.username }}</td>
 
-              <td class="text-end">
-                <a href="{% url 'casos:detalle' cita.causa.id %}" class="btn btn-sm btn-outline-secondary">
-                  Ver Caso
+              <td class="text-end" data-label="Acciones">
+                <a href="{% url 'casos:detalle' cita.causa.id %}" class="btn btn-sm btn-light text-primary border-0">
+                  Ver Caso <i class="bi bi-chevron-right"></i>
                 </a>
               </td>
             </tr>
           {% empty %}
             <tr>
-              <td colspan="7" class="text-center py-5 text-muted">
-                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
-                No hay citas futuras programadas.
+              <td colspan="7" class="text-center py-5">
+                <i class="bi bi-calendar-check fs-1 text-muted opacity-50 mb-2"></i>
+                <p class="text-muted mb-0">No hay citas futuras programadas.</p>
               </td>
             </tr>
           {% endfor %}

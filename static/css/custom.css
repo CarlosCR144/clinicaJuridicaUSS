@@ -1,0 +1,280 @@
+/* static/css/custom.css */
+
+:root {
+    /* Paleta Corporativa - Clínica Jurídica */
+    --primary-color: #1e3a8a; /* Azul Marino Profundo */
+    --primary-hover: #172554;
+    --accent-color: #3b82f6;  /* Azul más vivo para detalles */
+    --bg-body: #f8f9fa;       /* Gris muy claro de fondo */
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-dark);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* --- NAVBAR --- */
+.navbar-custom {
+    background-color: var(--primary-color) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+}
+
+.navbar-custom .navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-size: 1.35rem;
+}
+
+.navbar-custom .nav-link {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85) !important;
+    transition: color 0.2s ease;
+}
+
+.navbar-custom .nav-link:hover {
+    color: #ffffff !important;
+}
+
+.navbar-custom .nav-link.active {
+    color: #ffffff !important;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+/* --- CARDS (Tarjetas) --- */
+.card-modern {
+    border: none;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-modern:hover {
+    transform: translateY(-2px); /* Efecto de elevación sutil */
+    box-shadow: var(--card-hover-shadow);
+}
+
+.card-header-modern {
+    background-color: transparent;
+    border-bottom: 1px solid #f3f4f6;
+    padding: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* --- BOTONES --- */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px; /* Bordes más redondeados */
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+/* --- LIST GROUP (Listas) --- */
+.list-group-modern .list-group-item {
+    border: none;
+    border-bottom: 1px solid #f3f4f6;
+    padding: 1rem 1.25rem;
+    transition: background-color 0.2s;
+}
+
+.list-group-modern .list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-modern .list-group-item:hover {
+    background-color: #f9fafb;
+}
+
+/* --- FOOTER --- */
+.footer-custom {
+    background-color: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    color: var(--text-muted);
+    padding: 1.5rem 0;
+    font-size: 0.9rem;
+    margin-top: auto; /* Empuja el footer al fondo */
+}
+
+/* --- TABLAS MODERNAS --- */
+.table-custom {
+    margin-bottom: 0;
+}
+
+.table-custom th {
+    background-color: #f9fafb; /* Fondo gris muy suave para cabecera */
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 1.5rem;
+}
+
+.table-custom td {
+    vertical-align: middle;
+    padding: 1rem 1.5rem;
+    color: var(--text-dark);
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.95rem;
+}
+
+.table-custom tr:last-child td {
+    border-bottom: none;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8fafc; /* Azul muy pálido al pasar el mouse */
+}
+
+/* --- FORMULARIOS --- */
+.form-control, .form-select {
+    border: 1px solid #d1d5db;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    color: var(--text-dark);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); /* Anillo de foco suave */
+}
+
+.form-label {
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.form-text {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Arreglo para inputs que no tienen la clase .form-control explícita */
+.card-modern input[type="text"],
+.card-modern input[type="password"],
+.card-modern input[type="email"] {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    padding: 0.7rem 1rem; /* Un poco más de padding para que se vea moderno */
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    background-color: #f9fafb; /* Fondo sutil */
+}
+
+.card-modern input:focus {
+    border-color: var(--accent-color);
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* --- TABLAS RESPONSIVAS (Móvil -> Tarjetas) --- */
+@media (max-width: 991.98px) {
+    /* Ocultar cabeceras de tabla estándar */
+    .table-mobile-responsive thead {
+        display: none;
+    }
+
+    /* Convertir filas en tarjetas */
+    .table-mobile-responsive tbody tr {
+        display: block;
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        padding-bottom: 0.5rem; /* Espacio extra abajo */
+    }
+
+    /* Estilo de cada celda (ahora renglón de la tarjeta) */
+    .table-mobile-responsive td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f3f4f6;
+        padding: 0.75rem 1rem;
+        text-align: right;
+    }
+
+    .table-mobile-responsive td:last-child {
+        border-bottom: none;
+        justify-content: flex-end; /* Botones a la derecha */
+        padding-top: 1rem;
+    }
+
+    /* Pseudo-elemento para mostrar el título de la columna (data-label) */
+    .table-mobile-responsive td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        text-align: left;
+        margin-right: 1rem;
+        flex-shrink: 0; /* Evita que el título se aplaste */
+    }
+
+    /* ESTILO ESPECIAL: La primera celda (RIT) será el encabezado de la tarjeta */
+    .table-mobile-responsive td:first-child {
+        background-color: #f8f9fa; /* Gris muy suave */
+        border-radius: 12px 12px 0 0;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 1.1rem;
+        font-weight: bold;
+        padding: 1rem;
+    }
+    
+    /* Ocultamos el label "RIT" porque ya se entiende visualmente */
+    .table-mobile-responsive td:first-child::before {
+        display: none;
+    }
+}
+
+/* Corrección para la barra de búsqueda */
+.input-group {
+    flex-wrap: nowrap; /* Impide que los elementos salten de línea */
+}
+
+.input-group-text {
+    background-color: #fff; /* Fondo blanco para fusionarse con el input */
+    border-right: none;     /* Quitar borde derecho para unir visualmente */
+    color: var(--text-muted);
+}
+
+.input-group .form-control {
+    border-left: none;      /* Quitar borde izquierdo para unir visualmente */
+}
+
+/* Efecto de foco unificado: cuando el input tiene foco, iluminamos también el ícono */
+.input-group .form-control:focus {
+    box-shadow: none; /* Quitamos la sombra por defecto del input */
+    border-color: #d1d5db; /* Mantenemos el borde gris original */
+}
+
+.input-group:focus-within {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+}
+
+.input-group:focus-within .input-group-text,
+.input-group:focus-within .form-control {
+    border-color: var(--accent-color);
+}

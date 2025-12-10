@@ -3,41 +3,38 @@
 {% block title %}Usuarios del sistema{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2 class="h4 mb-0">Usuarios del sistema</h2>
-  <a href="{% url 'personas:crear_usuario' %}" class="btn btn-primary btn-sm">
-    <i class="bi bi-person-plus"></i> Nuevo usuario
-  </a>
+<div class="row mb-4 align-items-center">
+  <div class="col">
+    <h2 class="h3 fw-bold text-dark mb-0">Usuarios del Sistema</h2>
+    <p class="text-muted small mb-0">Administración de staff, estudiantes y supervisores.</p>
+  </div>
+  <div class="col-auto">
+    <a href="{% url 'personas:crear_usuario' %}" class="btn btn-primary shadow-sm">
+      <i class="bi bi-person-plus-fill me-1"></i> Nuevo Usuario
+    </a>
+  </div>
 </div>
 
-<ul class="nav nav-tabs mb-3">
+<ul class="nav nav-tabs mb-0 border-bottom-0 ps-2" style="position: relative; top: 1px; z-index: 1;">
   <li class="nav-item">
-    <a class="nav-link {% if not rol_actual %}active fw-bold{% endif %}" href="{% url 'personas:lista_usuarios' %}">
-        Todos
-    </a>
+    <a class="nav-link {% if not rol_actual %}active fw-bold bg-white{% endif %}" href="{% url 'personas:lista_usuarios' %}">Todos</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link {% if rol_actual == 'estudiante' %}active fw-bold{% endif %}" href="?rol=estudiante">
-        Estudiantes
-    </a>
+    <a class="nav-link {% if rol_actual == 'estudiante' %}active fw-bold bg-white{% endif %}" href="?rol=estudiante">Estudiantes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link {% if rol_actual == 'supervisor' %}active fw-bold{% endif %}" href="?rol=supervisor">
-        Supervisores
-    </a>
+    <a class="nav-link {% if rol_actual == 'supervisor' %}active fw-bold bg-white{% endif %}" href="?rol=supervisor">Supervisores</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link {% if rol_actual == 'secretaria' %}active fw-bold{% endif %}" href="?rol=secretaria">
-        Secretaría
-    </a>
+    <a class="nav-link {% if rol_actual == 'secretaria' %}active fw-bold bg-white{% endif %}" href="?rol=secretaria">Secretaría</a>
   </li>
 </ul>
 
-<div class="card shadow-sm border-0 border-top-0 rounded-top-0">
+<div class="card card-modern rounded-top-0">
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table table-hover mb-0 align-middle">
-        <thead class="table-light">
+      <table class="table table-custom table-hover mb-0 table-mobile-responsive">
+        <thead>
           <tr>
             <th>Usuario</th>
             <th>Nombre completo</th>
@@ -50,33 +47,33 @@
         <tbody>
           {% for usuario in usuarios %}
             <tr>
-              <td>{{ usuario.username }}</td>
-              <td>{{ usuario.get_full_name }}</td>
-              <td>
-                  {% if usuario.rol == 'director' %}<span class="badge text-bg-dark">Director</span>
-                  {% elif usuario.rol == 'supervisor' %}<span class="badge text-bg-primary">Supervisor</span>
-                  {% elif usuario.rol == 'estudiante' %}<span class="badge text-bg-info">Estudiante</span>
-                  {% else %}<span class="badge text-bg-secondary">{{ usuario.get_rol_display }}</span>
+              <td data-label="Usuario" class="fw-bold">{{ usuario.username }}</td>
+              <td data-label="Nombre">{{ usuario.get_full_name }}</td>
+              <td data-label="Rol">
+                  {% if usuario.rol == 'director' %}<span class="badge bg-dark">Director</span>
+                  {% elif usuario.rol == 'supervisor' %}<span class="badge bg-primary">Supervisor</span>
+                  {% elif usuario.rol == 'estudiante' %}<span class="badge bg-info text-dark">Estudiante</span>
+                  {% else %}<span class="badge bg-secondary">{{ usuario.get_rol_display }}</span>
                   {% endif %}
               </td>
-              <td>{{ usuario.email }}</td>
-              <td class="text-center">
+              <td data-label="Correo">{{ usuario.email }}</td>
+              <td data-label="Estado" class="text-center">
                 {% if usuario.is_active %}
                   <i class="bi bi-check-circle-fill text-success" title="Activo"></i>
                 {% else %}
                   <i class="bi bi-slash-circle text-muted" title="Inactivo"></i>
                 {% endif %}
               </td>
-              <td class="text-end">
-                <a href="{% url 'personas:editar_usuario' usuario.id %}" class="btn btn-sm btn-outline-secondary">
-                    Editar
+              <td class="text-end" data-label="Acciones">
+                <a href="{% url 'personas:editar_usuario' usuario.id %}" class="btn btn-sm btn-light text-primary border-0">
+                    <i class="bi bi-pencil-square"></i> Editar
                 </a>
               </td>
             </tr>
           {% empty %}
             <tr>
-              <td colspan="6" class="text-center py-4 text-muted">
-                No hay usuarios registrados en esta categoría.
+              <td colspan="6" class="text-center py-5">
+                <p class="text-muted mb-0">No hay usuarios registrados en esta categoría.</p>
               </td>
             </tr>
           {% endfor %}

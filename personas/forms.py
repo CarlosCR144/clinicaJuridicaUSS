@@ -137,6 +137,12 @@ class UsuarioForm(forms.ModelForm):
             raise ValidationError("El número debe comenzar con 9 (formato móvil Chile).")
         return f"+56 {cuerpo_celular[0]} {cuerpo_celular[1:5]} {cuerpo_celular[5:]}"
 
+    def clean_first_name(self):
+        return self.cleaned_data['first_name'].title()
+
+    def clean_last_name(self):
+        return self.cleaned_data['last_name'].title()
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")

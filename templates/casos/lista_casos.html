@@ -1,23 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}Casos{% endblock %}
+{% block title %}Casos · Gestión de Expedientes{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h2 class="h4 mb-0">Casos</h2>
-  {% if user.rol == 'director' %}
-  <a href="{% url 'casos:crear' %}" class="btn btn-primary btn-sm">
-    + Nuevo caso
-  </a>
-  {% endif %}
+<div class="row mb-4 align-items-center">
+  <div class="col">
+    <h2 class="h3 fw-bold text-dark mb-0">Expedientes</h2>
+    <p class="text-muted small mb-0">Gestión y seguimiento de causas activas.</p>
+  </div>
+  <div class="col-auto">
+    {% if user.rol == 'director' %}
+    <a href="{% url 'casos:crear' %}" class="btn btn-primary shadow-sm">
+      <i class="bi bi-plus-lg me-1"></i> Nuevo Caso
+    </a>
+    {% endif %}
+  </div>
 </div>
 
-<div class="card shadow-sm border-0 mb-3">
-  <div class="card-body">
-    <form method="get" class="row g-2">
-      <div class="col-md-4">
-        <input type="text" name="q" value="{{ request.GET.q|default:'' }}"
-               class="form-control" placeholder="Buscar por cliente, RIT, carátula...">
+<div class="card card-modern mb-4">
+  <div class="card-body py-3">
+    <form method="get" class="row g-2 align-items-center">
+      <div class="col-md-5">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+            <input type="text" name="q" value="{{ request.GET.q|default:'' }}"
+               class="form-control border-start-0 ps-0" placeholder="Buscar por cliente, RIT o carátula...">
+        </div>
       </div>
       <div class="col-md-3">
         <select name="estado" class="form-select" onchange="this.form.submit()">
@@ -30,65 +38,81 @@
         </select>
       </div>
       <div class="col-md-2">
-        <button class="btn btn-outline-primary w-100" type="submit">
-          Buscar
-        </button>
+        <button class="btn btn-outline-primary w-100" type="submit">Filtrar</button>
       </div>
     </form>
   </div>
 </div>
 
-<div class="card shadow-sm border-0">
+<div class="card card-modern">
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table table-hover mb-0 align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>RIT / Rol</th>
-            <th>Carátula</th>
-            <th>Cliente</th>
-            <th>Materia</th>
-            <th>Estado</th>
-            <th>Responsable</th>
-            <th>Fecha Ingreso</th>
-            <th class="text-end">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for caso in casos %}
-            <tr>
-              <td class="fw-semibold">{{ caso.rol_rit }}</td>
-              <td>{{ caso.caratula }}</td>
-              <td>{{ caso.cliente }}</td>
-              <td>{{ caso.materia }}</td>
-              <td>
-                {% if caso.estado == 'archivada' %}
-                    <span class="badge text-bg-secondary">{{ caso.get_estado_display }}</span>
-                {% elif caso.estado == 'con_sentencia' %}
-                    <span class="badge text-bg-success">{{ caso.get_estado_display }}</span>
-                {% else %}
-                    <span class="badge text-bg-info">{{ caso.get_estado_display }}</span>
-                {% endif %}
-              </td>
-              <td>{{ caso.responsable.get_full_name|default:caso.responsable.username }}</td>
-              <td>{{ caso.fecha_ingreso|date:"d/m/Y" }}</td>
-              <td class="text-end">
-                <a href="{% url 'casos:detalle' caso.id %}"
-                   class="btn btn-sm btn-outline-secondary">
-                  Ver
-                </a>
-              </td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="8" class="text-center py-4 text-muted">
-                No se encontraron casos registrados.
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+  <table class="table table-custom table-hover mb-0 table-mobile-responsive">
+    <thead>
+      <tr>
+        <th>RIT / Rol</th>
+        <th>Carátula</th>
+        <th>Cliente</th>
+        <th>Materia</th>
+        <th>Estado</th>
+        <th>Responsable</th>
+        <th>Ingreso</th>
+        <th class="text-end">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for caso in casos %}
+        <tr>
+          <td data-label="RIT / Rol">
+              <span class="fw-bold text-primary">{{ caso.rol_rit }}</span>
+          </td>
+          
+          <td data-label="Carátula" class="fw-medium">{{ caso.caratula }}</td>
+          
+          <td data-label="Cliente">{{ caso.cliente }}</td>
+          
+          <td data-label="Materia"><span class="badge bg-light text-dark border">{{ caso.materia }}</span></td>
+          
+          <td data-label="Estado">
+            {% if caso.estado == 'archivada' %}
+                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary px-2 py-1">{{ caso.get_estado_display }}</span>
+            {% elif caso.estado == 'con_sentencia' %}
+                <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1">{{ caso.get_estado_display }}</span>
+            {% elif caso.estado == 'en_tramite' %}
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1">{{ caso.get_estado_display }}</span>
+            {% else %}
+                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1">{{ caso.get_estado_display }}</span>
+            {% endif %}
+          </td>
+          
+          <td data-label="Responsable">
+              <div class="d-flex align-items-center justify-content-end justify-content-lg-start">
+                  <div class="rounded-circle bg-light text-secondary d-flex justify-content-center align-items-center me-2" style="width: 24px; height: 24px; font-size: 0.7rem;">
+                      {{ caso.responsable.first_name|slice:":1" }}{{ caso.responsable.last_name|slice:":1" }}
+                  </div>
+                  <small>{{ caso.responsable.get_full_name|default:caso.responsable.username }}</small>
+              </div>
+          </td>
+          
+          <td data-label="Fecha Ingreso" class="text-muted small">{{ caso.fecha_ingreso|date:"d/m/y" }}</td>
+          
+          <td class="text-end" data-label="Acciones">
+            <a href="{% url 'casos:detalle' caso.id %}" class="btn btn-sm btn-light text-primary border-0 w-100 w-lg-auto">
+              Ver Expediente <i class="bi bi-chevron-right ms-1"></i>
+            </a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="8" class="text-center py-5">
+            <div class="text-muted mb-2"><i class="bi bi-folder2-open fs-1 opacity-50"></i></div>
+            <p class="mb-0">No se encontraron casos registrados con estos criterios.</p>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
   </div>
 </div>
 {% endblock %}

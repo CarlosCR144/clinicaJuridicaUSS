@@ -1,41 +1,51 @@
 {% extends "base.html" %}
 
-{% block title %}Iniciar sesión · Clínica Jurídica{% endblock %}
+{% block title %}Iniciar Sesión · Clínica Jurídica{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-5">
-    <div class="card shadow-sm border-0">
-      <div class="card-body">
-        <h2 class="h4 mb-3 text-center">Iniciar sesión</h2>
-        <p class="text-muted small text-center mb-4">
-          Usa tus credenciales entregadas por la coordinación de la clínica.
-        </p>
+<div class="row justify-content-center align-items-center min-vh-75 py-5">
+  <div class="col-md-5 col-lg-4">
+    <div class="text-center mb-4">
+        <div class="d-inline-block bg-primary text-white rounded-3 p-3 mb-3 shadow-sm">
+            <i class="bi bi-bank2 fs-1"></i>
+        </div>
+        <h2 class="h4 fw-bold text-dark">Clínica Jurídica</h2>
+        <p class="text-muted">Acceso al Sistema de Gestión</p>
+    </div>
 
+    <div class="card card-modern shadow-lg border-0">
+      <div class="card-body p-4 p-md-5">
         <form method="post" novalidate>
           {% csrf_token %}
-          {{ form.non_field_errors }}
-
-          {% for field in form %}
-            <div class="mb-3">
-              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-              {{ field }}
-              {% if field.help_text %}
-                <div class="form-text">{{ field.help_text }}</div>
-              {% endif %}
-              {% for error in field.errors %}
-                <div class="invalid-feedback d-block">{{ error }}</div>
-              {% endfor %}
+          
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>{{ form.non_field_errors.0 }}</div>
             </div>
-          {% endfor %}
+          {% endif %}
+
+          <div class="mb-3">
+            <label class="form-label">Nombre de Usuario</label>
+            {{ form.username }}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Contraseña</label>
+            {{ form.password }}
+          </div>
 
           <div class="d-grid">
-            <button type="submit" class="btn btn-primary">
-              Entrar
+            <button type="submit" class="btn btn-primary py-2 fw-bold">
+              Ingresar <i class="bi bi-arrow-right ms-2"></i>
             </button>
           </div>
         </form>
       </div>
+    </div>
+    
+    <div class="text-center mt-4 text-muted small">
+        &copy; {% now "Y" %} Universidad San Sebastián
     </div>
   </div>
 </div>
