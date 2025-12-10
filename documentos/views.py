@@ -8,9 +8,10 @@ from django.utils import timezone
 from .models import Documento
 from .forms import DocumentoForm
 from casos.models import Causa, Bitacora
-from personas.mixins import SoloStaffMixin, SoloSupervisorMixin, SoloDirectorMixin, SoloEstudianteMixin
+from personas.mixins import RolRequiredMixin
 
-class SubirDocumentoView(SoloDirectorMixin, SoloSupervisorMixin, SoloEstudianteMixin, LoginRequiredMixin, CreateView):
+class SubirDocumentoView(RolRequiredMixin, LoginRequiredMixin, CreateView):
+    roles_permitidos = ['director', 'supervisor', 'estudiante']
     model = Documento
     form_class = DocumentoForm
     template_name = 'documentos/subir_documento.html'
@@ -43,7 +44,8 @@ class SubirDocumentoView(SoloDirectorMixin, SoloSupervisorMixin, SoloEstudianteM
     def get_success_url(self):
         return reverse('casos:detalle', kwargs={'pk': self.causa.pk})
 
-class CambiarEstadoDocumentoView(SoloSupervisorMixin, SoloDirectorMixin, LoginRequiredMixin, View):
+class CambiarEstadoDocumentoView(RolRequiredMixin, LoginRequiredMixin, View):
+    roles_permitidos = ['director', 'supervisor']
     def post(self, request, pk, accion):
         doc = get_object_or_404(Documento, pk=pk)
         
