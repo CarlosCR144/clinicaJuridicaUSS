@@ -86,14 +86,19 @@
           </td>
           
           <td data-label="Responsable">
-              <div class="d-flex align-items-center justify-content-end justify-content-lg-start">
-                  <div class="rounded-circle bg-light text-secondary d-flex justify-content-center align-items-center me-2" style="width: 24px; height: 24px; font-size: 0.7rem;">
-                      {{ caso.responsable.first_name|slice:":1" }}{{ caso.responsable.last_name|slice:":1" }}
-                  </div>
-                  <small>{{ caso.responsable.get_full_name|default:caso.responsable.username }}</small>
-              </div>
+            {% if caso.responsable %}
+                <div class="d-flex align-items-center justify-content-end justify-content-lg-start">
+                    <div class="rounded-circle bg-light text-secondary d-flex justify-content-center align-items-center me-2"
+                        style="width: 24px; height: 24px; font-size: 0.7rem;">
+                          {{ caso.responsable.first_name|slice:":1" }}{{ caso.responsable.last_name|slice:":1" }}
+                    </div>
+                    <small>{{ caso.responsable.get_full_name|default:caso.responsable.username }}</small>
+                </div>
+            {% else %}
+                <span class="text-muted fst-italic">Sin asignar</span>
+            {% endif %}
           </td>
-          
+
           <td data-label="Fecha Ingreso" class="text-muted small">{{ caso.fecha_ingreso|date:"d/m/y" }}</td>
           
           <td class="text-end" data-label="Acciones">
