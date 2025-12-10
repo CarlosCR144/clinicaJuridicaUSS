@@ -46,7 +46,7 @@
         </thead>
         <tbody>
           {% for usuario in usuarios %}
-            <tr>
+            <tr class="{% if not usuario.is_active %}bg-light text-muted{% endif %}">
               <td data-label="Usuario" class="fw-bold">{{ usuario.username }}</td>
               <td data-label="Nombre">{{ usuario.get_full_name }}</td>
               <td data-label="Rol">
@@ -57,23 +57,47 @@
                   {% endif %}
               </td>
               <td data-label="Correo">{{ usuario.email }}</td>
+              
               <td data-label="Estado" class="text-center">
                 {% if usuario.is_active %}
                   <i class="bi bi-check-circle-fill text-success" title="Activo"></i>
                 {% else %}
-                  <i class="bi bi-slash-circle text-muted" title="Inactivo"></i>
+                  <span class="badge bg-danger">Inactivo</span>
                 {% endif %}
               </td>
+              
               <td class="text-end" data-label="Acciones">
-                <a href="{% url 'personas:editar_usuario' usuario.id %}" class="btn btn-sm btn-light text-primary border-0">
-                    <i class="bi bi-pencil-square"></i> Editar
-                </a>
+                {% if usuario.is_active %}
+                    <a href="{% url 'personas:editar_usuario' usuario.id %}" class="btn btn-sm btn-light text-primary border-0" title="Editar">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    
+                    {% if user.rol == 'director' and usuario != user %}
+                    <button type="button" class="btn btn-sm btn-light text-danger border-0" 
+                            data-bs-toggle="modal" data-bs-target="#confirmActionModal"
+                            data-action-url="{% url 'personas:eliminar_usuario' usuario.id %}"
+                            data-title="Desactivar Usuario"
+                            data-message="¿Estás seguro de desactivar a {{ usuario.username }}?"
+                            data-btn-class="btn-danger" data-btn-text="Desactivar">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    {% endif %}
+                {% else %}
+                    {% if user.rol == 'director' %}
+                    <form action="{% url 'personas:restaurar_usuario' usuario.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success text-white shadow-sm" title="Restaurar Acceso">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Restaurar
+                        </button>
+                    </form>
+                    {% endif %}
+                {% endif %}
               </td>
             </tr>
           {% empty %}
             <tr>
               <td colspan="6" class="text-center py-5">
-                <p class="text-muted mb-0">No hay usuarios registrados en esta categoría.</p>
+                <p class="text-muted mb-0">No hay usuarios registrados.</p>
               </td>
             </tr>
           {% endfor %}
@@ -82,4 +106,53 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold" id="modalTitle">Confirmar Acción</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-4">
+        <p class="text-muted mb-0" id="modalMessage">¿Estás seguro?</p>
+      </div>
+      <div class="modal-footer border-top-0 pt-0">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        
+        <form id="modalForm" method="post" action="">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" id="modalConfirmBtn">Confirmar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var confirmModal = document.getElementById('confirmActionModal');
+        confirmModal.addEventListener('show.bs.modal', function (event) {
+            // Botón que disparó el modal
+            var button = event.relatedTarget;
+            
+            // Extraer datos del botón
+            var title = button.getAttribute('data-title');
+            var message = button.getAttribute('data-message');
+            var url = button.getAttribute('data-action-url');
+            var btnClass = button.getAttribute('data-btn-class');
+            var btnText = button.getAttribute('data-btn-text');
+
+            // Actualizar el modal
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('modalForm').action = url;
+            
+            var confirmBtn = document.getElementById('modalConfirmBtn');
+            confirmBtn.className = 'btn ' + btnClass;
+            confirmBtn.textContent = btnText;
+        });
+    });
+</script>
+
 {% endblock %}

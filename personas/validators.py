@@ -37,5 +37,5 @@ def validar_rut_chileno(value):
 
 def solo_numeros(value):
     """Valida que el campo contenga solo dígitos y opcionalmente el símbolo +"""
-    if not re.match(r'^\+?\d+$', value):
-        raise ValidationError("Este campo solo debe contener números.")
+    if not re.match(r'^[\d\s\+]+$', str(value)):
+        raise ValidationError("Este campo solo debe contener números, espacios y el símbolo +.")

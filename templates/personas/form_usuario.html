@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-md-8">
-    <div class="card shadow-sm border-0">
+    <div class="card card-modern shadow-sm border-0">
       <div class="card-header bg-white fw-bold">
         {{ titulo }}
       </div>
@@ -42,18 +42,27 @@
             
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Teléfono</label>
-                {{ form.telefono }} <div class="text-danger small">{{ form.telefono.errors.0 }}</div>
+                {{ form.telefono }} 
+                <div class="text-danger small">{{ form.telefono.errors.0 }}</div>
             </div>
 
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Email</label>
                 {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                {% endif %}
             </div>
 
             <div class="col-12">
                 <hr>
                 <label class="form-label fw-semibold">Contraseña</label>
-                {{ form.password }}
+                <div class="input-group">
+                    {{ form.password }}
+                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
                 {% if form.password.help_text %}
                     <div class="form-text">{{ form.password.help_text }}</div>
                 {% endif %}
@@ -61,9 +70,13 @@
             </div>
 
             <div class="col-12">
-                <hr>
                 <label class="form-label fw-semibold">Confirmar Contraseña</label>
-                {{ form.password_confirm }}
+                <div class="input-group">
+                    {{ form.password_confirm }}
+                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
                 {% if form.password_confirm.help_text %}
                     <div class="form-text">{{ form.password_confirm.help_text }}</div>
                 {% endif %}
@@ -83,19 +96,15 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Buscamos el input por el ID que definimos en forms.py (inputRutUser)
+        
+        // 1. Formateo RUT
         const rutInput = document.getElementById('inputRutUser');
-
         if (rutInput) {
             rutInput.addEventListener('input', function(e) {
                 let valor = e.target.value.replace(/[^0-9kK]/g, '').toUpperCase();
-                
                 if (valor.length > 1) {
-                    // Separar cuerpo y dígito verificador
                     const cuerpo = valor.slice(0, -1);
                     const dv = valor.slice(-1);
-                    
-                    // Formatear cuerpo con puntos
                     let cuerpoFormateado = "";
                     for (let i = cuerpo.length - 1, j = 1; i >= 0; i--, j++) {
                         cuerpoFormateado = cuerpo.charAt(i) + cuerpoFormateado;
@@ -109,6 +118,24 @@
                 }
             });
         }
+
+        // 2. Toggle Password (Mostrar/Ocultar)
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                const icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        });
     });
 </script>
 {% endblock %}

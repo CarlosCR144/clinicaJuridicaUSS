@@ -6,6 +6,7 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 from casos import views as casos_views
+from personas.forms import PasswordChangeFormBootstrap
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,7 +35,8 @@ urlpatterns = [
         'cambiar_contraseña/',
         auth_views.PasswordChangeView.as_view(
             template_name='personas/cambiar_contra.html',
-            success_url='/'
+            success_url='/',
+            form_class=PasswordChangeFormBootstrap
         ),
         name='cambiar_contra'
     ),

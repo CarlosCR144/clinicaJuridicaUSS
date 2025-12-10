@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-md-6 col-lg-5">
-    <div class="card shadow-sm border-0">
+    <div class="card card-modern shadow-sm border-0">
       <div class="card-body p-4">
 
         <div class="text-center mb-4">
@@ -20,70 +20,70 @@
           {% csrf_token %}
 
           {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-              {{ form.non_field_errors.0 }}
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>{{ form.non_field_errors.0 }}</div>
             </div>
           {% endif %}
 
-          <!-- Contraseña actual -->
           <div class="mb-3">
-            <label class="form-label fw-semibold">
-              Contraseña actual
-            </label>
-            <input
-              type="password"
-              name="old_password"
-              class="form-control"
-              placeholder="Ingresa tu contraseña actual"
-              required
-            >
+            <label class="form-label fw-semibold">{{ form.old_password.label }}</label>
+            <div class="input-group">
+                {{ form.old_password }}
+                <button class="btn btn-outline-secondary toggle-password" type="button">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
             {% if form.old_password.errors %}
-              <div class="text-danger small">{{ form.old_password.errors.0 }}</div>
+              <div class="text-danger small mt-1">{{ form.old_password.errors.0 }}</div>
             {% endif %}
           </div>
 
-          <br>
-          
-          <!-- Nueva contraseña -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">
-              Nueva contraseña
-            </label>
-            <input
-              type="password"
-              name="new_password1"
-              class="form-control"
-              placeholder="Nueva contraseña"
-              required
-            >
+          <hr class="my-4 border-light">
+
+          <div class="mb-3 position-relative">
+            <label class="form-label fw-semibold">{{ form.new_password1.label }}</label>
+            <div class="input-group">
+                {{ form.new_password1 }}
+                <button class="btn btn-outline-secondary toggle-password" type="button">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
+            
+            <div class="progress mt-2" style="height: 4px;">
+                <div class="progress-bar bg-danger" id="password-strength" role="progressbar" style="width: 0%"></div>
+            </div>
+
+            {% if form.new_password1.help_text %}
+              <div class="form-text mt-2 small text-muted bg-light p-2 rounded border">
+                  {{ form.new_password1.help_text|safe }}
+              </div>
+            {% endif %}
+            
             {% if form.new_password1.errors %}
-              <div class="text-danger small">{{ form.new_password1.errors.0 }}</div>
-            {% endif %}
-
-        <br>
-
-          <!-- Confirmar contraseña -->
-          <div class="mb-4">
-            <label class="form-label fw-semibold">
-              Confirmar nueva contraseña
-            </label>
-            <input
-              type="password"
-              name="new_password2"
-              class="form-control"
-              placeholder="Repite la nueva contraseña"
-              required
-            >
-            {% if form.new_password2.errors %}
-              <div class="text-danger small">{{ form.new_password2.errors.0 }}</div>
+              <div class="text-danger small mt-1">{{ form.new_password1.errors.0 }}</div>
             {% endif %}
           </div>
 
-          <div class="d-grid">
-            <button type="submit" class="btn btn-primary rounded-pill">
-              <i class="bi bi-check-circle me-1"></i>
-              Actualizar contraseña
+          <div class="mb-4">
+            <label class="form-label fw-semibold">{{ form.new_password2.label }}</label>
+            <div class="input-group">
+                {{ form.new_password2 }}
+                <button class="btn btn-outline-secondary toggle-password" type="button">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
+            <div id="match-feedback" class="small mt-1 fw-bold"></div>
+            {% if form.new_password2.errors %}
+              <div class="text-danger small mt-1">{{ form.new_password2.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary py-2">
+              <i class="bi bi-check-circle me-2"></i> Actualizar Contraseña
             </button>
+            <a href="{% url 'home' %}" class="btn btn-light text-muted">Cancelar</a>
           </div>
 
         </form>
@@ -92,4 +92,76 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const pass1 = document.getElementById("id_new_password1");
+    const pass2 = document.getElementById("id_new_password2");
+    const feedback = document.getElementById("match-feedback");
+    const strengthBar = document.getElementById("password-strength");
+
+    // --- Lógica de Mostrar/Ocultar Contraseña ---
+    const toggleButtons = document.querySelectorAll('.toggle-password');
+    
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // El input está justo antes del botón en el HTML (previousElementSibling)
+            const input = this.previousElementSibling;
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash'); // Icono de ojo tachado
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+    });
+
+    // --- Lógica de Validación (Coincidencia y Fuerza) ---
+    function checkMatch() {
+        if (!pass2.value) {
+            feedback.textContent = "";
+            return;
+        }
+        if (pass1.value === pass2.value) {
+            feedback.textContent = "Las contraseñas coinciden";
+            feedback.className = "small mt-1 fw-bold text-success";
+            pass2.classList.remove("is-invalid");
+            pass2.classList.add("is-valid");
+        } else {
+            feedback.textContent = "Las contraseñas no coinciden";
+            feedback.className = "small mt-1 fw-bold text-danger";
+            pass2.classList.remove("is-valid");
+            pass2.classList.add("is-invalid");
+        }
+    }
+
+    function checkStrength() {
+        const val = pass1.value;
+        let width = 0;
+        let color = "bg-danger";
+
+        if (val.length > 0) width = 20;
+        if (val.length >= 8) { width = 60; color = "bg-warning"; }
+        if (val.length >= 8 && /[A-Z]/.test(val) && /[0-9]/.test(val)) { 
+            width = 100; color = "bg-success"; 
+        }
+
+        strengthBar.style.width = width + "%";
+        strengthBar.className = "progress-bar " + color;
+    }
+
+    if(pass1 && pass2) {
+        pass1.addEventListener("input", function() {
+            checkStrength();
+            if(pass2.value) checkMatch();
+        });
+        pass2.addEventListener("input", checkMatch);
+    }
+});
+</script>
 {% endblock %}

@@ -15,6 +15,7 @@ class Usuario(AbstractUser):
     
     rut = models.CharField(max_length=12, unique=True, verbose_name='RUT')
     telefono = models.CharField(max_length=15, blank=True, null=True, verbose_name='Teléfono')
+    email = models.EmailField(unique=True, verbose_name='Correo Electrónico')
     rol = models.CharField(max_length=20, choices=ROL_CHOICES, default='estudiante')
 
     def __str__(self):
@@ -28,6 +29,7 @@ class Persona(models.Model):
     telefono = models.CharField(max_length=15, blank=True, null=True, validators=[solo_numeros])
     direccion = models.CharField(max_length=200, blank=True, null=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True, verbose_name="Activo")
     
     def __str__(self):
         return f"{self.nombres} {self.apellidos} ({self.rut})"

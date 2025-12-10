@@ -32,7 +32,12 @@
 
           <div class="mb-4">
             <label class="form-label">Contraseña</label>
-            {{ form.password }}
+            <div class="input-group">
+                {{ form.password }}
+                <button class="btn btn-outline-secondary toggle-password bg-white" type="button" style="border-left: none;">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
           </div>
 
           <div class="d-grid">
@@ -49,4 +54,27 @@
     </div>
   </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // El input está justo antes del botón en el HTML
+                const input = this.previousElementSibling;
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
