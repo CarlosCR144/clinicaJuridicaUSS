@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from .validators import solo_numeros
 
 # Create your models here.
 
@@ -23,8 +24,8 @@ class Persona(models.Model):
     rut = models.CharField(max_length=12, unique=True, verbose_name='RUT')
     nombres = models.CharField(max_length=100)
     apellidos = models.CharField(max_length=100)
-    email = models.EmailField(blank=True, null=True)
-    telefono = models.CharField(max_length=15, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True, unique=True)
+    telefono = models.CharField(max_length=15, blank=True, null=True, validators=[solo_numeros])
     direccion = models.CharField(max_length=200, blank=True, null=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
     
