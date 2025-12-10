@@ -22,7 +22,12 @@
         {% if user.is_authenticated %}
         <div class="d-flex gap-2">
             <a href="{% url 'casos:lista' %}" class="btn btn-primary btn-lg shadow-sm">
-                <i class="bi bi-folder2-open me-2"></i> Mis Casos
+                <i class="bi bi-folder2-open me-2"></i> 
+                {% if user.rol == 'estudiante' %}
+                    Mis Casos Activos
+                {% else %}
+                    Total Casos Activos
+                {% endif %}
                 <span class="badge bg-white text-primary ms-2 rounded-pill">{{ total_casos_activos }}</span>
             </a>
             <a href="{% url 'agenda:calendario' %}" class="btn btn-outline-secondary btn-lg">
