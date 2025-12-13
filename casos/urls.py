@@ -10,4 +10,5 @@ urlpatterns = [
     path('<int:caso_id>/participantes/nuevo/', views.ParticipanteCreateView.as_view(), name='crear_participante'),
     path('<int:pk>/estado/<str:accion>/', views.CambiarEstadoCasoView.as_view(), name='cambiar_estado'),
     path('<int:pk>/editar/', views.CausaUpdateView.as_view(), name='editar'),
+    path('buscar_casos/', views.buscar_casos, name='buscar_casos'),
 ]

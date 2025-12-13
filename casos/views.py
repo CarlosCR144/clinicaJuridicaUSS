@@ -7,6 +7,11 @@ from django.contrib import messages
 from .models import Causa, Participante, Bitacora
 from .forms import CausaForm, ParticipanteForm
 
+# sirve para hacer consultas complejas
+from django.db.models import Q
+# sirve par decoradores de vistas basadas en clases
+from django.contrib.auth.decorators import login_required
+
 from django.utils import timezone
 from agenda.models import Cita
 from documentos.models import Documento
@@ -281,3 +286,37 @@ class CambiarEstadoCasoView(LoginRequiredMixin, View):
             messages.success(request, f"Estado actualizado: {caso.get_estado_display()}")
         
         return redirect('casos:detalle', pk=pk)
+
+@login_required
+def buscar_casos(request):
+    # Obtener el término de búsqueda desde los parámetros GET
+    query = request.GET.get('query' or '').strip()
+
+    # si no se escribe nada, devuelve campo vacio 
+    causas = Causa.objects.none()
+    documentos = Documento.objects.none()
+
+    if query:
+        #1. buscar en causas por RIT o carátula
+        causas = Causa.objects.filter(
+            Q(rol_rit__icontains=query) | Q(caratula__icontains=query)
+        )
+
+        #2. rol estudiante
+        if request.user.rol == 'estudiante':
+            causas = causas.filter(responsable= request.user)
+
+        #3. si el usuario es estudiante, solo ve sus causas
+        if query.isdigit():
+            # si tiene numeros, asume que busca  el ID de un documento
+            documentos = Documento.objects.filter(id=int(query)).select_related('causa')
+
+            # estudiante solo ve documentos de sus causas
+            if request.user.rol == 'estudiante':
+                documentos = Documento.filter(causa__responsable = request.user)
+    
+    return render(request, 'casos/buscar_casos.html',{
+        'query':query,
+        'causas':causas,
+        'documentos':documentos,
+    })
