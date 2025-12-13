@@ -110,7 +110,7 @@ class CausaDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        context['documentos'] = self.object.documentos.all().order_by('folio')
+        context['documentos'] = self.object.documentos.all().order_by('orden_expediente')
         context['citas'] = self.object.citas.all().order_by('fecha_hora')
         
         # VALIDACIÓN DE INTEGRIDAD INTELIGENTE
@@ -125,7 +125,7 @@ class CausaDetailView(LoginRequiredMixin, DetailView):
                 # 1. Siempre mostramos la alerta visual en pantalla
                 alertas_integridad.append({
                     'tipo': 'modificado',
-                    'mensaje': f"El documento '{doc.nombre}' (Folio {doc.folio}) ha sido modificado externamente.",
+                    'mensaje': f"El documento '{doc.nombre}' (Documento N° {doc.orden_expediente}) ha sido modificado externamente.",
                     'documento': doc
                 })
                 

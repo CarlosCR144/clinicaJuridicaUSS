@@ -35,7 +35,7 @@ class SubirDocumentoView(RolRequiredMixin, LoginRequiredMixin, CreateView):
             causa=self.causa,
             usuario=self.request.user,
             accion='archivo',
-            detalle=f"Se subió documento: {documento.nombre} (Folio {documento.folio}) - Estado: {documento.get_estado_display()}"
+            detalle=f"Se subió documento: {documento.nombre} (Documento N° {documento.orden_expediente}) - Estado: {documento.get_estado_display()}"
         )
 
         messages.success(self.request, "Documento subido. Queda pendiente de revisión por el Supervisor.")
@@ -75,7 +75,7 @@ class CambiarEstadoDocumentoView(RolRequiredMixin, LoginRequiredMixin, View):
             causa=doc.causa,
             usuario=request.user,
             accion='actualizacion', # O 'nota'
-            detalle=f"Revisión Documento (Folio {doc.folio}): {doc.get_estado_display()}. {doc.observaciones_rechazo}"
+            detalle=f"Revisión Documento (Documento N° {doc.orden_expediente}): {doc.get_estado_display()}. {doc.observaciones_rechazo}"
         )
 
         messages.success(request, msg)

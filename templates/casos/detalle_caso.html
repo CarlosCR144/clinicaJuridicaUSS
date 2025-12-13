@@ -228,7 +228,13 @@
                 {% endif %}
               </div>
               <div class="d-flex justify-content-between align-items-end">
-                  <small class="text-muted">Folio {{ doc.folio }}</small>
+                  <span class="fw-semibold">
+                    Documento N° {{ doc.orden_expediente }}
+                  </span>
+                  <small class="text-muted">
+                    Folio Global {{ doc.id }}
+                  </small>
+                  {% comment %} <small class="text-muted">Documento N° {{ doc.orden_expediente }}</small> {% endcomment %}
                   <div class="btn-group">
                       <a href="{{ doc.archivo.url }}" target="_blank" class="btn btn-xs btn-light text-primary" title="Ver"><i class="bi bi-eye"></i></a>
                       

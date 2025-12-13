@@ -21,6 +21,7 @@ class Documento(models.Model):
     )
 
     causa = models.ForeignKey(Causa, on_delete=models.CASCADE, related_name='documentos')
+    orden_expediente = models.PositiveIntegerField(editable=False) # Para orden en el expediente
     subido_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     
     archivo = models.FileField(upload_to='documentos/%Y/%m/')
@@ -37,24 +38,25 @@ class Documento(models.Model):
         related_name='docs_aprobados'
     )
 
-    folio = models.PositiveIntegerField(editable=False) 
     version = models.PositiveIntegerField(default=1, editable=False)
     fecha_subida = models.DateTimeField(auto_now_add=True)
     hash_archivo = models.CharField(max_length=64, blank=True, null=True)
     hash_fallido = models.CharField(max_length=64, blank=True, null=True, editable=False)
 
-    class Meta:
-        ordering = ['causa', 'folio']
-        unique_together = ('causa', 'folio')
 
     def __str__(self):
-        return f"Folio {self.folio} - {self.nombre} ({self.get_estado_display()})"
+        return f"Documento N° {self.causa_id} | Doc {self.orden_expediente} - {self.nombre}"
 
+
+    class Meta:
+        ordering = ['causa', 'orden_expediente']
+        unique_together = ('causa', 'orden_expediente')
     def save(self, *args, **kwargs):
-        # 1. Foliación Automática
-        if not self.folio:
-            ultimo_doc = Documento.objects.filter(causa=self.causa).order_by('-folio').first()
-            self.folio = (ultimo_doc.folio + 1) if ultimo_doc else 1
+
+        # 1 Numeracion automatica del documento dentro del caso
+        if not self.orden_expediente:
+            ultimo = Documento.objects.filter(causa=self.causa).order_by('-orden_expediente').first()
+            self.orden_expediente = ultimo.orden_expediente + 1 if ultimo else 1
         
         # 2. Hash SHA-256
         if self.archivo and not self.hash_archivo:
