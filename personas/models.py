@@ -8,7 +8,7 @@ class Usuario(AbstractUser):
     ROL_CHOICES = (
         ('director', 'Director/a de Clínica'),
         ('secretaria', 'Secretaría / Apoyo'),
-        ('estudiante', 'Estudiante / Clínico'),
+        ('estudiante', 'Procurador / Estudiante'),
         ('supervisor', 'Abogado Supervisor'),
         ('admin', 'Administrador del Sistema'),
     )

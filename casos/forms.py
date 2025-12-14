@@ -22,7 +22,7 @@ class CausaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # SE PODRÍA AÑADIR DIRECTOR
         self.fields['responsable'].queryset = User.objects.filter(rol__in=['estudiante', 'supervisor'])
-        self.fields['responsable'].label = "Estudiante Responsable"
+        self.fields['responsable'].label = "Procurador Responsable"
         self.fields['responsable'].required = False
 
     def clean_rol_rit(self):

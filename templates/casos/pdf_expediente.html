@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Expediente {{ caso.rol_rit }}</title>
+    <style>
+        /* Estilos específicos para xhtml2pdf */
+        @page {
+            size: letter portrait;
+            margin: 2cm;
+            @frame header_frame {           /* Encabezado estático */
+                -pdf-frame-content: header_content;
+                left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+            }
+            @frame footer_frame {           /* Pie de página estático */
+                -pdf-frame-content: footer_content;
+                left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+            }
+        }
+        
+        body { font-family: Helvetica, sans-serif; font-size: 12px; }
+        
+        /* Ocultar visualmente los bloques de header/footer en el flujo normal HTML
+           porque xhtml2pdf los inyecta en los frames */
+        #header_content { display: none; }
+        #footer_content { display: none; }
+
+        .logo { height: 40px; }
+        .titulo { font-size: 18px; font-weight: bold; color: #1e3a8a; margin-top: 10px; }
+        .meta-info { width: 100%; margin-bottom: 20px; }
+        .label { font-weight: bold; color: #555; }
+        .contenido { text-align: justify; }
+    </style>
+</head>
+<body>
+    <div id="header_content">
+        Clínica Jurídica Universidad San Sebastián
+    </div>
+
+    <div id="footer_content">
+        Pág. <pdf:pagenumber> | Generado por {{ usuario_impresion.get_full_name }}
+    </div>
+
+    <div class="main-content">
+        <div>
+            <img src="{{ logo_url }}" class="logo" alt="USS Logo">
+            <div class="titulo">Expediente de Causa</div>
+            <div>RIT: {{ caso.rol_rit }}</div>
+        </div>
+        
+        <br>
+        
+        <table class="meta-info">
+            <tr>
+                <td class="label">Carátula:</td>
+                <td>{{ caso.caratula }}</td>
+            </tr>
+            <tr>
+                <td class="label">Materia:</td>
+                <td>{{ caso.materia }}</td>
+            </tr>
+            </table>
+
+        <h3>Registro de Actuaciones</h3>
+        <div class="contenido">
+            {{ registro.contenido|linebreaks|default:"Sin contenido registrado." }}
+        </div>
+    </div>
+</body>
+</html>

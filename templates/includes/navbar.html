@@ -43,7 +43,9 @@
                     Staff
                 </a>
             </li>
+            {% endif %}
 
+            {% if user.rol == 'director' or user.rol == 'admin' or user.rol == 'supervisor' %}
             <li class="nav-item d-flex align-items-center ms-2">
                 <form class="d-flex" method="get" action="{% url 'casos:buscar_casos' %}">
                     <input
@@ -54,7 +56,6 @@
                     aria-label="Buscar">
                 </form>
             </li>
-            
             {% endif %}
         {% endif %}
       </ul>

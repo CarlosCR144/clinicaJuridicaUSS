@@ -196,19 +196,30 @@
     <div class="card card-modern mb-4">
       <div class="card-header-modern d-flex justify-content-between align-items-center">
         <span>
-          <i class="bi bi-journal-text me-2"></i>Registro Interno del Caso
+          <i class="bi bi-journal-text me-2"></i>Expediente Maestro del Caso
         </span>
 
-        {% if user.rol == 'director' or user.rol == 'supervisor' or user == caso.responsable %}
-          <a href="{% url 'casos:editar_registro' caso.id %}"
-            class="btn btn-sm btn-outline-primary">
-            Editar
-          </a>
+        <div class="d-flex gap-2">
+            {% if caso.registro.archivo %}
+                <a href="{{ caso.registro.archivo.url }}" target="_blank" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-file-earmark-pdf-fill me-1"></i> Ver PDF Oficial
+                </a>
+            {% else %}
+                <a href="{% url 'casos:generar_pdf' caso.id %}" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-gear-wide-connected me-1"></i> Generar PDF
+                </a>
+            {% endif %}
 
-          <a href="{% url 'casos:historial_registro' caso.id %}" class="btn btn-outline-secondary btn-sm">
-            Historial
-          </a>
-        {% endif %}
+            {% if user.rol == 'director' or user.rol == 'supervisor' or user == caso.responsable %}
+              <a href="{% url 'casos:editar_registro' caso.id %}"
+                class="btn btn-sm btn-outline-primary">
+                Editar
+              </a>
+              <a href="{% url 'casos:historial_registro' caso.id %}" class="btn btn-outline-secondary btn-sm">
+                Historial
+              </a>
+            {% endif %}
+        </div>
       </div>
 
       <div class="card-body">

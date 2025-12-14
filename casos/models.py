@@ -86,9 +86,10 @@ class Bitacora(models.Model):
 class RegistroCaso(models.Model):
     causa = models.OneToOneField('Causa', on_delete=models.CASCADE,related_name='registro')
     contenido = models.TextField(blank=True,default='')
+    
+    archivo = models.FileField(upload_to='expedientes/', blank=True, null=True, verbose_name="Expediente PDF")
 
     actualizado_por = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null=True,blank=True)
-
     actualizado_en = models.DateTimeField(auto_now=True)
 
     def __str__(self):

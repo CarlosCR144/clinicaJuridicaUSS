@@ -20,6 +20,11 @@ from personas.mixins import SoloDirectorMixin, SoloStaffMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.http import HttpResponse
+from .utils import generar_pdf_expediente
+
 class CausaListView(LoginRequiredMixin, ListView):
     model = Causa
     template_name = 'casos/lista_casos.html'
@@ -59,6 +64,15 @@ class CausaCreateView(SoloDirectorMixin, LoginRequiredMixin, CreateView):
             form.instance.responsable = self.request.user
             
         response = super().form_valid(form)
+        
+        registro = RegistroCaso.objects.create(
+            causa=self.object,
+            contenido=f"Apertura de Expediente.\nFecha: {timezone.now().strftime('%d/%m/%Y')}\nResponsable Inicial: {self.object.responsable.get_full_name()}",
+            actualizado_por=self.request.user
+        )
+
+        # Generar el PDF del expediente
+        generar_pdf_expediente(registro)
         
         Bitacora.objects.create(
             causa=self.object,
@@ -389,6 +403,7 @@ class RegistroCasoEditView(LoginRequiredMixin, View):
                 # Actualizar el registro principal
                 nuevo_registro.actualizado_por = request.user
                 nuevo_registro.save()
+                generar_pdf_expediente(nuevo_registro)
 
                 Bitacora.objects.create(
                     causa=causa,
@@ -426,3 +441,47 @@ class RegistroCasoHistorialView(LoginRequiredMixin, ListView):
             'historial':historial,
         })
     
+
+class GenerarExpedientePDF(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        causa = get_object_or_404(Causa, pk=pk)
+        
+        # Validación de Permisos
+        permitido = False
+        if request.user.rol in ['director', 'supervisor']:
+            permitido = True
+        elif request.user.rol == 'estudiante' and causa.responsable == request.user:
+            permitido = True
+            
+        if not permitido:
+            messages.error(request, "No tienes permiso para descargar este expediente.")
+            return redirect('casos:detalle', pk=pk)
+
+        registro, _ = RegistroCaso.objects.get_or_create(causa=causa)
+
+        # Contexto
+        context = {
+            'caso': causa,
+            'registro': registro,
+            'fecha_impresion': timezone.now(),
+            'usuario_impresion': request.user,
+            'logo_url': 'https://cdn.uss.cl/content/uploads/2025/10/22175624/USShorizontal-tagline-ilumina-dark.svg'
+        }
+
+        # Renderizado
+        template_path = 'casos/pdf_expediente.html'
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="Expediente_{causa.rol_rit}.pdf"'
+
+        template = get_template(template_path)
+        html = template.render(context)
+
+        # Creación del PDF
+        pisa_status = pisa.CreatePDF(
+           html, dest=response
+        )
+
+        if pisa_status.err:
+           return HttpResponse('Hubo un error al generar el PDF <pre>' + html + '</pre>')
+           
+        return response
