@@ -50,10 +50,18 @@
       {% endif %}
 
       {% if user.rol == 'director' or user.rol == 'supervisor' or user == caso.responsable %}
-        <a href="{% url 'casos:editar_registro' caso.id %}"
-          class="btn btn-outline-dark btn-sm">
-          Registro interno
-        </a>
+
+        {% if caso.estado != 'archivada' and caso.estado != 'con_sentencia' %}
+          <a href="{% url 'casos:editar_registro' caso.id %}"
+            class="btn btn-outline-dark btn-sm">
+            Registro interno
+          </a>
+        {% else %}
+          <span class="badge bg-secondary">
+            Registro cerrado
+          </span>
+        {% endif %}
+
       {% endif %}
 
 
@@ -195,6 +203,10 @@
           <a href="{% url 'casos:editar_registro' caso.id %}"
             class="btn btn-sm btn-outline-primary">
             Editar
+          </a>
+
+          <a href="{% url 'casos:historial_registro' caso.id %}" class="btn btn-outline-secondary btn-sm">
+            Historial
           </a>
         {% endif %}
       </div>

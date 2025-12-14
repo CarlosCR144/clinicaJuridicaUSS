@@ -93,3 +93,16 @@ class RegistroCaso(models.Model):
 
     def __str__(self):
         return f"Registro de {self.causa.rol_rit}"
+
+class RegistroCasoHistorial(models.Model):
+    causa = models.ForeignKey('Causa', on_delete=models.CASCADE,related_name='registro_historial')
+    contenido = models.TextField() # snapshot del texto antes del cambip
+    creado_por = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null=True,blank=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-creado_en']
+
+    def __str__(self):
+        return f"Historial de Registro de {self.causa.rol_rit} - {self.creado_en}"
+    

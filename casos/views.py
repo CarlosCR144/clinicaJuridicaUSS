@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
 
-from .models import Causa, Participante, Bitacora, RegistroCaso
+from .models import Causa, Participante, Bitacora, RegistroCaso, RegistroCasoHistorial
 from .forms import CausaForm, ParticipanteForm, RegistroCasoForm
 
 # sirve para hacer consultas complejas
@@ -331,16 +331,24 @@ class RegistroCasoEditView(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         causa = get_object_or_404(Causa, pk=kwargs['pk'])
 
-        # Solo director, supervisor pueden editar
+        # bloqueo si el caso está cerrado o archivado
+        if causa.estado in ['archivada', 'con_sentencia']:
+            messages.error(
+                request,
+                "El registro interno está cerrado porque el caso fue finalizado."
+            )
+            return redirect('casos:detalle', pk=causa.pk)
+
+        # Permisos por rol
         if request.user.rol in ['director', 'supervisor']:
             return super().dispatch(request, *args, **kwargs)
-        
-        # Estudiante responsable del caso
+
         if request.user.rol == 'estudiante' and causa.responsable == request.user:
             return super().dispatch(request, *args, **kwargs)
-        
-        messages.error(request, "No tienes permisos para editar el registro de este caso")
-        return redirect('casos:detalle', pk=causa.pk)    
+
+        messages.error(request,"No tienes permisos para editar el registro de este caso.")
+        return redirect('casos:detalle', pk=causa.pk)
+
 
     def get(self, request,pk):
         causa = get_object_or_404(Causa, pk=pk)
@@ -359,32 +367,62 @@ class RegistroCasoEditView(LoginRequiredMixin, View):
     #guardar cambios
     def post(self,request,pk):
         causa = get_object_or_404(Causa, pk=pk)
-        registro = causa.registro 
+        registro, _ = RegistroCaso.objects.get_or_create(causa=causa)
+        contenido_anterior = registro.contenido or ''
 
         form = RegistroCasoForm(request.POST, instance=registro) #sd muestra el texto guardado y no se crea uno nuevo,
         #ya que representa el registro en especifico
 
         if form.is_valid():
-            # 
-            registro = form.save(commit=False)
+           nuevo_registro = form.save(commit=False)
+           nuevo_contenido = nuevo_registro.contenido or ''
 
-            # se guarda quien lo editó
-            registro.actualizado_por = request.user
+           # Solo guardar historial si hubo cambios
+           if nuevo_contenido != (contenido_anterior or "").strip():
+                # Guardar snapshot en historial
+                RegistroCasoHistorial.objects.create(
+                     causa=causa,
+                     contenido=contenido_anterior,
+                     creado_por=request.user
+                )
 
-            registro.save()
+                # Actualizar el registro principal
+                nuevo_registro.actualizado_por = request.user
+                nuevo_registro.save()
 
-            Bitacora.objects.create(
-                causa=causa,
-                usuario=request.user,
-                accion='nota',
-                detalle="Se actualizó el registro interno del caso."
-            )
+                Bitacora.objects.create(
+                    causa=causa,
+                    usuario=request.user,
+                    accion='nota',
+                    detalle="Se actualizó el registro interno del caso."
+                )
 
-            messages.success(request, 'Registro del caso ha sido guardado correctamente')
-            return redirect('casos:detalle', pk=causa.pk)
-        
+                messages.success(request, 'Registro del caso ha sido guardado correctamente')
+                return redirect('casos:detalle', pk=causa.pk)
+            
         return render(request, 'casos/registro_caso_form.html',{
             'causa':causa,
             'form':form,
+        })
+    
+class RegistroCasoHistorialView(LoginRequiredMixin, ListView):
+    def get(self, request, pk):
+        causa = get_object_or_404(Causa, pk=pk)
+
+        # Solo director, supervisor pueden ver historial
+        if request.user.rol in ['director', 'supervisor']:
+            pass
+        # Estudiante responsable del caso
+        elif request.user.rol == 'estudiante' and causa.responsable == request.user:
+            pass
+        else:
+            messages.error(request, "No tienes permisos para ver el historial del registro de este caso")
+            return redirect('casos:detalle', pk=causa.pk)    
+
+        historial = causa.registro_historial.all()
+
+        return render(request, 'casos/registro_caso_historial.html',{
+            'causa':causa,
+            'historial':historial,
         })
     
