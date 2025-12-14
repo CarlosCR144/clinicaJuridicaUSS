@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Registro del Caso{% endblock %}
+
+{% block content %}
+
+<div class="card card-modern">
+  <div class="card-header-modern">
+    Registro del Caso – {{ causa.rol_rit }}
+  </div>
+
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        {{ form.contenido.label_tag }}
+        {{ form.contenido }}
+      </div>
+
+      <button class="btn btn-primary">
+        Guardar registro
+      </button>
+
+      <a href="{% url 'casos:detalle' causa.id %}"
+         class="btn btn-secondary">
+        Volver
+      </a>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

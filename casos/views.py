@@ -4,8 +4,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
 
-from .models import Causa, Participante, Bitacora
-from .forms import CausaForm, ParticipanteForm
+from .models import Causa, Participante, Bitacora, RegistroCaso
+from .forms import CausaForm, ParticipanteForm, RegistroCasoForm
 
 # sirve para hacer consultas complejas
 from django.db.models import Q
@@ -17,6 +17,7 @@ from agenda.models import Cita
 from documentos.models import Documento
 
 from personas.mixins import SoloDirectorMixin, SoloStaffMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 
 class CausaListView(LoginRequiredMixin, ListView):
@@ -320,3 +321,70 @@ def buscar_casos(request):
         'causas':causas,
         'documentos':documentos,
     })
+
+class RegistroCasoEditView(LoginRequiredMixin, View):
+    """
+    Permite crear o editar el registro textual (hoja viva)
+    de una causa.
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        causa = get_object_or_404(Causa, pk=kwargs['pk'])
+
+        # Solo director, supervisor pueden editar
+        if request.user.rol in ['director', 'supervisor']:
+            return super().dispatch(request, *args, **kwargs)
+        
+        # Estudiante responsable del caso
+        if request.user.rol == 'estudiante' and causa.responsable == request.user:
+            return super().dispatch(request, *args, **kwargs)
+        
+        messages.error(request, "No tienes permisos para editar el registro de este caso")
+        return redirect('casos:detalle', pk=causa.pk)    
+
+    def get(self, request,pk):
+        causa = get_object_or_404(Causa, pk=pk)
+
+        # 1. obtener o crear el registro
+        registro, creado = RegistroCaso.objects.get_or_create(causa=causa)
+
+        # 2. Crear el formulario con el contenido actual
+        form = RegistroCasoForm(instance=registro)
+
+        return render(request, 'casos/registro_caso_form.html',{
+            'causa':causa,
+            'form':form,
+        })
+    
+    #guardar cambios
+    def post(self,request,pk):
+        causa = get_object_or_404(Causa, pk=pk)
+        registro = causa.registro 
+
+        form = RegistroCasoForm(request.POST, instance=registro) #sd muestra el texto guardado y no se crea uno nuevo,
+        #ya que representa el registro en especifico
+
+        if form.is_valid():
+            # 
+            registro = form.save(commit=False)
+
+            # se guarda quien lo editó
+            registro.actualizado_por = request.user
+
+            registro.save()
+
+            Bitacora.objects.create(
+                causa=causa,
+                usuario=request.user,
+                accion='nota',
+                detalle="Se actualizó el registro interno del caso."
+            )
+
+            messages.success(request, 'Registro del caso ha sido guardado correctamente')
+            return redirect('casos:detalle', pk=causa.pk)
+        
+        return render(request, 'casos/registro_caso_form.html',{
+            'causa':causa,
+            'form':form,
+        })
+    

@@ -411,3 +411,37 @@ body {
         display: none !important; /* Oculta el texto secundario si no cabe */
     }
 }
+
+/* ============================= */
+/* ESTILO PARA TEXTAREA EN FORMULARIOS DE REGISTRO DE CASOS */
+textarea {
+    resize: vertical;
+    min-height: 220px;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    line-height: 1.6;
+}
+
+/* Registro interno en modo lectura */
+.registro-lectura {
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+    background-color: #f9fafb;
+    padding: 1.25rem;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+
+.registro-preview {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    max-height: 220px;
+    overflow-y: auto;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    color: #374151;
+}

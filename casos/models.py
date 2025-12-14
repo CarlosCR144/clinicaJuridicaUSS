@@ -80,3 +80,16 @@ class Bitacora(models.Model):
 
     def __str__(self):
         return f"{self.get_accion_display()} - {self.causa} ({self.fecha})"
+    
+
+# 
+class RegistroCaso(models.Model):
+    causa = models.OneToOneField('Causa', on_delete=models.CASCADE,related_name='registro')
+    contenido = models.TextField(blank=True,default='')
+
+    actualizado_por = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null=True,blank=True)
+
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Registro de {self.causa.rol_rit}"

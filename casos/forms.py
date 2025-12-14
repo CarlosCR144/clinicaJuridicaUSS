@@ -1,5 +1,5 @@
 from django import forms
-from .models import Causa, Participante
+from .models import Causa, Participante, RegistroCaso
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -53,3 +53,19 @@ class ParticipanteForm(forms.ModelForm):
                 raise forms.ValidationError(f"{persona} ya está registrado como {rol} en este caso.")
         
         return cleaned_data
+    
+class RegistroCasoForm(forms.ModelForm):
+    class Meta:
+        model = RegistroCaso
+        fields = ['contenido'] # solo se edita el texto
+        widgets = {
+                'contenido': forms.Textarea(attrs={
+                'class':'form-control',
+                'rows':10,
+                'placeholder':'Escribe aquí el registro interno del caso...'
+            })
+        }
+
+        labels = {
+            'contenido': 'Registro interno del caso'
+        }
